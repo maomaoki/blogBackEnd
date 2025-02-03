@@ -34,22 +34,19 @@ public class EmailUtils {
 
     /**
      * 异步 发送 邮件
-     * @param to 收件人
+     *
+     * @param to      收件人
      * @param subject 主题
      * @param content 内容
      */
     @Async
-    public void sendEmail(String to, String subject, String content) {
+    public void sendEmail(String to, String subject, String content) throws MailException {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(username);
         message.setTo(to);
         message.setSubject(subject);
         message.setText(content);
-        try {
-            mailSender.send(message);
-        } catch (MailException e) {
-            log.error("邮件发送失败:", e);
-        }
+        mailSender.send(message);
     }
 
 }

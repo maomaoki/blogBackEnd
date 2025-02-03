@@ -16,6 +16,7 @@ public enum ErrorEnums {
     ERROR(1, "ERROR"),
     PARAMS_ERROR(40000,"参数错误"),
     NOT_AUTH(40100,"没有权限"),
+    USER_NOT_EXIST(40101,"用户不存在"),
     NOT_FOUND_ERROR(40400,"请求资源不存在"),
     OP_ERROR(50000,"操作失败"),
     ;

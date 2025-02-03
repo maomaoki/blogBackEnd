@@ -8,6 +8,9 @@ spring:
     url: jdbc:mysql://localhost:3306/ym-blog
     username: root
     password: yunmao
+  session:
+    store-type: redis
+    timeout: 3600 # session 超时时间（秒）
   redis:
     # 连接地址
     host: "localhost"
@@ -57,6 +60,18 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.ym.blogBackEnd.controller
+
+ym:
+  # 用户配置
+  user:
+    register-email-code-expire-time: 3 # 邮箱验证码过期时间（分钟）
+    register-email-code-length: 6 # 邮箱验证码长度
+    password-salt: YunMao # 密码加盐
+    password-min-length: 9 # 密码最短长度
+    account-min-length: 8 # 账号最短长度
+
+
+
 
 
 

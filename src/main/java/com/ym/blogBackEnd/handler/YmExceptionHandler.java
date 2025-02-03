@@ -7,6 +7,8 @@ import com.ym.blogBackEnd.utils.ResUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @Title: YmExceptionHandler
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class YmExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
+    @ResponseBody
     public Result<?> exceptionHandler(Exception e) {
         log.error("系统异常信息", e);
         return ResUtils.error(ErrorEnums.OP_ERROR, "系统错误");
@@ -27,6 +30,7 @@ public class YmExceptionHandler {
 
 
     @ExceptionHandler(value = BusinessException.class)
+    @ResponseBody
     public Result<?> businessExceptionHandler(BusinessException e) {
         log.error("业务异常信息", e);
         return ResUtils.error(e.getCode(), e.getMessage());
