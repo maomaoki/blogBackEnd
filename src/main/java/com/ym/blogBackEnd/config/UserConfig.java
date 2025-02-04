@@ -41,4 +41,9 @@ public class UserConfig {
      */
     private Integer accountMinLength;
 
+    /**
+     *  默认 密码
+     */
+    private String defaultPassword;
+
 }

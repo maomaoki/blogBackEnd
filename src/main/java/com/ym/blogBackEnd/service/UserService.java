@@ -1,11 +1,16 @@
 package com.ym.blogBackEnd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ym.blogBackEnd.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ym.blogBackEnd.model.dto.user.UserLoginDto;
 import com.ym.blogBackEnd.model.dto.user.UserRegisterDto;
 import com.ym.blogBackEnd.model.dto.user.UserSendEmailCodeDto;
 import com.ym.blogBackEnd.model.dto.user.UserEditDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminAddUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,6 +76,42 @@ public interface UserService extends IService<User> {
 
 
     /**
+     * 管理员 添加用户
+     *
+     * @param adminAddUserDto 管理员 添加用户 请求 类
+     * @param request http
+     * @return 用户id
+     */
+    public Long adminAddUser(AdminAddUserDto adminAddUserDto,HttpServletRequest request);
+
+
+    /**
+     * 管理员 删除用户
+     *
+     * @param adminDeleteUserDto 管理员 删除用户 请求 类
+     * @return 用户id
+     */
+    public Long adminDeleteUser(AdminDeleteUserDto adminDeleteUserDto);
+
+
+    /**
+     * 管理员 更新 用户
+     *
+     * @param adminUpdateUserDto 管理员 更新 用户 请求类
+     * @param  request http请求
+     */
+    public void adminUpdateUser(AdminUpdateUserDto adminUpdateUserDto,HttpServletRequest request);
+
+
+    /**
+     * 管理员 分页 查询 用户
+     *
+     * @param adminPageUserDto 管理员 分页查询 用户 请求类
+     * @return 用户分页信息
+     */
+    public Page<UserVo> adminPageUser(AdminPageUserDto adminPageUserDto);
+
+    /**
      * 用户 转换为 用户脱敏信息
      *
      * @param user 用户
@@ -86,4 +127,12 @@ public interface UserService extends IService<User> {
      * @return 用户脱敏信息列表
      */
     public List<UserVo> userListToVos(List<User> users);
+
+
+    /**
+     * 判断当前 用户 权限是不是 系统管理员
+     * @param request http请求
+     * @return true 是 false 不是
+     */
+    public Boolean isBoss(HttpServletRequest request);
 }

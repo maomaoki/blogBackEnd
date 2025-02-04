@@ -69,6 +69,7 @@ ym:
     password-salt: YunMao # 密码加盐
     password-min-length: 9 # 密码最短长度
     account-min-length: 8 # 账号最短长度
+    default-password: 123456 # 默认密码
 
 
 

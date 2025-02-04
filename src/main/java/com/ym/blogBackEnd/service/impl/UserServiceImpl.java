@@ -1,10 +1,13 @@
 package com.ym.blogBackEnd.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.common.redis.RedisEmail;
 import com.ym.blogBackEnd.config.UserConfig;
@@ -17,6 +20,10 @@ import com.ym.blogBackEnd.model.dto.user.UserLoginDto;
 import com.ym.blogBackEnd.model.dto.user.UserRegisterDto;
 import com.ym.blogBackEnd.model.dto.user.UserSendEmailCodeDto;
 import com.ym.blogBackEnd.model.dto.user.UserEditDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminAddUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
+import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.UserService;
 import com.ym.blogBackEnd.mapper.UserMapper;
@@ -311,6 +318,259 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         this.updateById(userUpdate);
     }
 
+
+    /**
+     * 管理员 添加用户
+     *
+     * @param adminAddUserDto 管理员 添加用户 请求 类
+     * @param request http
+     * @return 用户id
+     */
+    @Override
+    public Long adminAddUser(AdminAddUserDto adminAddUserDto,HttpServletRequest request) {
+        String userAccount = adminAddUserDto.getUserAccount();
+        if (userAccount.length() < userConfig.getAccountMinLength()) {
+            throw new BusinessException(ErrorEnums.PARAMS_ERROR, "用户账号不能小于" + userConfig.getAccountMinLength() + "位");
+        }
+        String userName = adminAddUserDto.getUserName();
+        String userRole = adminAddUserDto.getUserRole();
+        // 1. 校验参数(主要是账号,其他都可以默认)
+        ThrowUtils.ifThrow(
+                StrUtil.isBlank(userAccount),
+                ErrorEnums.PARAMS_ERROR,
+                "用户账号不能为空");
+
+        if (StrUtil.isBlank(userName)) {
+            userName = StrUtil.subPre(userAccount, Math.toIntExact(userConfig.getRegisterEmailCodeLength()));
+        }
+        if (StrUtil.isBlank(userRole)) {
+            userRole = UserConstant.USER_ROLE_USER;
+        }
+
+        // 这里得区分一下权限添加,admin 只能添加 user/blackUser
+        // 1. 管理员权限只能修改 用户->黑名单
+        if (userRole.equals(UserConstant.USER_ROLE_ADMIN) || userRole.equals(UserConstant.USER_ROLE_BOSS)) {
+            ThrowUtils.ifThrow(!isBoss(request), ErrorEnums.NOT_AUTH, "权限不够!");
+        }
+
+
+        // 2. 判断用户是否存在
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount", userAccount).or().eq("userEmail", userAccount);
+        User user = this.getOne(queryWrapper);
+        ThrowUtils.ifThrow(
+                user != null,
+                ErrorEnums.PARAMS_ERROR,
+                "用户账号已存在");
+
+
+        // 3. 封装默认数据
+        user = new User();
+        user.setUserAccount(userAccount);
+        // 默认密码
+        user.setUserPassword(saltMd5(userConfig.getDefaultPassword()));
+        user.setUserName(userName);
+        user.setUserRole(userRole);
+        user.setUserStatus(UserConstant.USER_STATUS_NORMAL);
+        user.setRegisteredSource(UserConstant.USER_REGISTER_SOURCE_ADMIN);
+
+        // 4. 添加用户
+        boolean result = this.save(user);
+        if (!result) {
+            throw new BusinessException(ErrorEnums.OP_ERROR, "添加用户插入数据库失败");
+        }
+        return user.getId();
+    }
+
+    /**
+     * 管理员 删除用户
+     *
+     * @param adminDeleteUserDto 管理员 删除用户 请求 类
+     * @return 用户id
+     */
+    @Override
+    public Long adminDeleteUser(AdminDeleteUserDto adminDeleteUserDto) {
+        Long id = adminDeleteUserDto.getId();
+        // 1. 校验参数
+        ThrowUtils.ifThrow(
+                id == null,
+                ErrorEnums.PARAMS_ERROR,
+                "用户id不能为空");
+
+
+        // 2. 判断是否存在此用户
+        User user = this.getById(id);
+        ThrowUtils.ifThrow(
+                user == null,
+                ErrorEnums.PARAMS_ERROR,
+                "用户不存在");
+
+        // 3. 删除用户
+        boolean result = this.removeById(id);
+        if (!result) {
+            throw new BusinessException(ErrorEnums.OP_ERROR, "删除用户失败");
+        }
+        return id;
+    }
+
+    /**
+     * 管理员 更新 用户
+     *
+     * @param adminUpdateUserDto 管理员 更新 用户 请求类
+     * @param request            http请求
+     */
+    @Override
+    public void adminUpdateUser(AdminUpdateUserDto adminUpdateUserDto, HttpServletRequest request) {
+        Long id = adminUpdateUserDto.getId();
+        String userName = adminUpdateUserDto.getUserName();
+        String userRole = adminUpdateUserDto.getUserRole();
+        String userAvatar = adminUpdateUserDto.getUserAvatar();
+        Integer userStatus = adminUpdateUserDto.getUserStatus();
+        // 1. 校验参数(主要是用户id)
+        ThrowUtils.ifThrow(
+                id == null,
+                ErrorEnums.PARAMS_ERROR,
+                "用户id不能为空");
+
+        // 2. 判断是否存在此用户
+        User user = this.getById(id);
+        ThrowUtils.ifThrow(
+                user == null,
+                ErrorEnums.PARAMS_ERROR,
+                "用户不存在");
+
+        // 3. 更新用户 - 分情况
+
+        // 3-1. 如果 有更新 角色,那就要区分一下
+        if (!StrUtil.isBlank(userRole)) {
+            // 1. 管理员权限只能修改 用户->黑名单
+            if (userRole.equals(UserConstant.USER_ROLE_ADMIN) || userRole.equals(UserConstant.USER_ROLE_BOSS)) {
+                ThrowUtils
+                        .ifThrow(!isBoss(request), ErrorEnums.NOT_AUTH, "权限不够!");
+            }
+
+            // 2. 如果是黑名单,那不管状态是什么 都要禁止
+            if (userRole.equals(UserConstant.USER_ROLE_BLACK_USER)) {
+                userStatus = UserConstant.USER_STATUS_FREEZE;
+            }
+
+            // 3. 如果是其他角色,那我就要将状态变成正常
+            if (!userRole.equals(UserConstant.USER_ROLE_BLACK_USER)) {
+                userStatus = UserConstant.USER_STATUS_NORMAL;
+            }
+
+        }
+
+        // 4. 封装更新数据
+        user = new User();
+        user.setId(id);
+        user.setUserName(userName);
+        user.setUserRole(userRole);
+        user.setUserAvatar(userAvatar);
+        user.setUserStatus(userStatus);
+        user.setEditTime(new Date());
+
+        // 5. 更新用户
+        boolean result = this.updateById(user);
+        ThrowUtils.ifThrow(
+                !result,
+                ErrorEnums.OP_ERROR,
+                "更新失败");
+    }
+
+
+    /**
+     * 管理员 分页 查询 用户
+     *
+     * @param adminPageUserDto 管理员 分页查询 用户 请求类
+     * @return 用户分页信息
+     */
+    @Override
+    public Page<UserVo> adminPageUser(AdminPageUserDto adminPageUserDto) {
+        ThrowUtils.ifThrow(
+                adminPageUserDto == null,
+                ErrorEnums.PARAMS_ERROR,
+                "参数不能为空"
+        );
+
+        User user = new User();
+        BeanUtil.copyProperties(adminPageUserDto, user);
+        // 1. 封装查询参数
+        QueryWrapper<User> userQueryWrapper = queryWrapper(adminPageUserDto);
+        // 2. 分页查询
+        Integer pageNum = adminPageUserDto.getPageNum();
+        Integer pageSize = adminPageUserDto.getPageSize();
+        Page<User> page = this.page(new Page<>(pageNum, pageSize), userQueryWrapper);
+
+
+        // 3. 封装返回数据
+        Page<UserVo> userVoPage = new Page<>(pageNum, pageSize, page.getTotal());
+        // 数据脱敏
+        userVoPage.setRecords(userListToVos(page.getRecords()));
+        return userVoPage;
+    }
+
+
+    /**
+     * 将 查询 语句 转成 查询 wrapper
+     *
+     * @param adminPageUserDto 查询dto
+     * @return 查询 wrapper
+     */
+    private QueryWrapper<User> queryWrapper(AdminPageUserDto adminPageUserDto) {
+        ThrowUtils.ifThrow(
+                adminPageUserDto == null,
+                ErrorEnums.PARAMS_ERROR,
+                "请求参数不能为空"
+        );
+
+
+        Long id = adminPageUserDto.getId();
+        String userAccount = adminPageUserDto.getUserAccount();
+        String userName = adminPageUserDto.getUserName();
+        String userRole = adminPageUserDto.getUserRole();
+        String userTags = adminPageUserDto.getUserTags();
+        String userIntroduction = adminPageUserDto.getUserIntroduction();
+        Integer userFGender = adminPageUserDto.getUserFGender();
+        Integer userAge = adminPageUserDto.getUserAge();
+        Integer userStatus = adminPageUserDto.getUserStatus();
+        String registeredSource = adminPageUserDto.getRegisteredSource();
+        Date startTime = adminPageUserDto.getStartTime();
+        Date endTime = adminPageUserDto.getEndTime();
+        String sortField = adminPageUserDto.getSortField();
+        String sortOrder = adminPageUserDto.getSortOrder();
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+        userQueryWrapper.eq(ObjUtil.isNotNull(userFGender), "userFGender", userFGender);
+        userQueryWrapper.eq(ObjUtil.isNotNull(userAge), "userAge", userAge);
+        userQueryWrapper.eq(ObjUtil.isNotNull(userStatus), "userStatus", userStatus);
+
+        userQueryWrapper.eq(StrUtil.isNotBlank(userAccount), "userAccount", userAccount);
+        userQueryWrapper.eq(StrUtil.isNotBlank(userRole), "userRole", userRole);
+        userQueryWrapper.eq(StrUtil.isNotBlank(registeredSource), "registeredSource", registeredSource);
+
+        userQueryWrapper.like(StrUtil.isNotBlank(userName), "userName", userName);
+        userQueryWrapper.like(StrUtil.isNotBlank(userIntroduction), "userIntroduction", userIntroduction);
+
+
+        // 标签 需要 拼接查询
+        if (StrUtil.isNotBlank(userTags)) {
+            List<String> tagsList = JSONUtil.toList(userTags, String.class);
+            tagsList.forEach(tag -> userQueryWrapper.like("userTags", "\"" + tag + "\""));
+        }
+
+
+        // 时间范围
+        userQueryWrapper.between(ObjUtil.isNotNull(startTime) && ObjUtil.isNotNull(endTime)
+                , "createTime", startTime, endTime);
+
+        // 排序字段
+        userQueryWrapper.orderBy(StrUtil.isNotBlank(sortField), "asc".equals(sortOrder), sortField);
+        return userQueryWrapper;
+    }
+
+
     /**
      * 用户 转换为 用户脱敏信息
      *
@@ -381,6 +641,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     private String saltMd5(String userPassword) {
         return SecureUtil.md5(userPassword + userConfig.getPasswordSalt());
+    }
+
+
+    /**
+     * 判断当前 用户 权限是不是 系统管理员
+     *
+     * @param request http请求
+     * @return true 是 false 不是
+     */
+    @Override
+    public Boolean isBoss(HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorEnums.PARAMS_ERROR, "请求不能为空");
+        }
+        User user = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_KEY);
+        if (user == null) {
+            throw new BusinessException(ErrorEnums.NOT_AUTH, "用户未登录");
+        }
+        return user.getUserRole().equals(UserConstant.USER_ROLE_BOSS);
     }
 }
 
