@@ -1,7 +1,12 @@
 package com.ym.blogBackEnd.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ym.blogBackEnd.annotate.CheckAuth;
 import com.ym.blogBackEnd.common.response.Result;
+import com.ym.blogBackEnd.constant.UserConstant;
+import com.ym.blogBackEnd.enums.ErrorEnums;
+import com.ym.blogBackEnd.enums.UserRoleEnums;
+import com.ym.blogBackEnd.model.domain.User;
 import com.ym.blogBackEnd.model.dto.user.UserEditDto;
 import com.ym.blogBackEnd.model.dto.user.UserLoginDto;
 import com.ym.blogBackEnd.model.dto.user.UserRegisterDto;
@@ -13,6 +18,7 @@ import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.UserService;
 import com.ym.blogBackEnd.utils.ResUtils;
+import com.ym.blogBackEnd.utils.ThrowUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,13 +80,15 @@ public class UserController {
 
 
     @PostMapping("/admin/add")
-    public Result<Long> adminAddUser(@RequestBody AdminAddUserDto adminAddUserDto,HttpServletRequest request) {
-        Long userId = userService.adminAddUser(adminAddUserDto,request);
+    @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
+    public Result<Long> adminAddUser(@RequestBody AdminAddUserDto adminAddUserDto, HttpServletRequest request) {
+        Long userId = userService.adminAddUser(adminAddUserDto, request);
         return ResUtils.success(userId, "添加成功");
     }
 
 
     @PostMapping("/admin/update")
+    @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
     public Result<Boolean> adminEditUser(@RequestBody AdminUpdateUserDto adminUpdateUserDto, HttpServletRequest request) {
         userService.adminUpdateUser(adminUpdateUserDto, request);
         return ResUtils.success(true, "更新成功");
@@ -88,6 +96,7 @@ public class UserController {
 
 
     @PostMapping("/admin/delete")
+    @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
     public Result<Long> adminDeleteUser(@RequestBody AdminDeleteUserDto adminDeleteUserDto) {
         Long deleteUserId = userService.adminDeleteUser(adminDeleteUserDto);
         return ResUtils.success(deleteUserId, "删除成功");
@@ -95,9 +104,28 @@ public class UserController {
 
 
     @PostMapping("admin/page")
+    @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
     public Result<Page<UserVo>> adminPageUser(@RequestBody AdminPageUserDto adminPageUserDto) {
         Page<UserVo> userVoPage = userService.adminPageUser(adminPageUserDto);
         return ResUtils.success(userVoPage, "查询成功");
+    }
+
+
+    @PostMapping("/admin/info")
+    @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
+    public Result<UserVo> adminGetUserInfoById(@RequestBody AdminDeleteUserDto adminDeleteUserDto) {
+        ThrowUtils.ifThrow(
+                adminDeleteUserDto == null ||
+                        adminDeleteUserDto.getId() == null,
+                ErrorEnums.PARAMS_ERROR,
+                "参数错误"
+        );
+        User user = userService.getById(adminDeleteUserDto.getId());
+        ThrowUtils.ifThrow(
+                user == null,
+                ErrorEnums.USER_NOT_EXIST,
+                "用户不存在");
+        return ResUtils.success(userService.userToVo(user), "查询成功");
     }
 
 }
