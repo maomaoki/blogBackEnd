@@ -3,6 +3,10 @@ spring:
     name: ym-blog
   profiles:
     active: dev
+  servlet:
+    multipart:
+      max-file-size: 10MB # 文件上传最大大小
+      max-request-size: 10MB # 请求最大大小
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ym-blog
@@ -70,6 +74,20 @@ ym:
     password-min-length: 9 # 密码最短长度
     account-min-length: 8 # 账号最短长度
     default-password: 123456 # 默认密码
+  # 图片配置
+  picture:
+    upload-dir: D:/ym-blog/picture/ # 图片上传父级目录
+    avatar-dir: avatar/ # 头像上传目录
+    blog-dir: blog/ # 博客图片上传目录
+    other-dir: other/ # 其他图片上传目录
+    max-file-size: 3 # 图片上传最大大小（MB）
+    allowed-file-types:  # 允许上传的文件类型
+      - jpg
+      - jpeg
+      - png
+      - webp
+    http-url: http://localhost:9999/api/images/ # 图片访问前缀
+
 
 
 

@@ -1,5 +1,6 @@
 package com.ym.blogBackEnd.model.dto.user.admin;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ym.blogBackEnd.common.request.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -71,11 +72,13 @@ public class AdminPageUserDto extends PageRequest implements Serializable {
     /**
      *  开始时间
      */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     /**
      * 结束时间
      */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
 
