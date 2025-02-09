@@ -33,7 +33,7 @@ public class PictureController {
 
 
     @PostMapping("/upload")
-    public Result<UploadPictureVo> upload(@Param("file") MultipartFile file,
+    public Result<UploadPictureVo> uploadPicture(@Param("file") MultipartFile file,
                                           UploadPictureDto uploadPictureDto,
                                           HttpServletRequest request) {
 

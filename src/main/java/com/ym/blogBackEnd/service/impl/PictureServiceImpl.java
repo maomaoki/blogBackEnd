@@ -1,5 +1,6 @@
 package com.ym.blogBackEnd.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.config.PictureConfig;
@@ -54,10 +55,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
                                          UploadPictureDto uploadPictureDto,
                                          HttpServletRequest request) {
 
+
         // 1. 校验参数
         if (file == null || uploadPictureDto == null) {
             throw new BusinessException(ErrorEnums.PARAMS_ERROR, "参数不能为空");
         }
+
 
         // 2. 校验文件
         verifyPictureFile(file);
@@ -66,6 +69,13 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 3. 封装数据库数据
         Picture picture = new Picture();
         UserVo userVo = userService.userGetLoginInfo(request);
+
+        // 校验权限,目前只有管理员才能上传其他照片,其他只能上传头像
+        if (!userService.isAdmin(userVo)) {
+            // 不是管理员,这里直接修改成 头像,不影响下面代码
+            pictureCategory = PictureConstant.PICTURE_CATEGORY_AVATAR;
+        }
+
 
         // 替换原本文件名 改成随机生成 uuid
         // 生成随机文件名
@@ -92,19 +102,47 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         picture.setCreateUserId(userVo.getId());
 
         // 4. 异步保存文件
-        pictureManager.uploadPicture(file, picturePath,pictureName + "." + getFileSuffix(Objects.requireNonNull(file.getOriginalFilename())));
+        pictureManager.uploadPicture(file, picturePath, pictureName + "." + getFileSuffix(Objects.requireNonNull(file.getOriginalFilename())));
 
         // 5. 保存数据库
         this.save(picture);
 
         // 6. 封装返回结果,并且返回
         UploadPictureVo uploadPictureVo = new UploadPictureVo();
-        uploadPictureVo.setId(picture.getId());
-        uploadPictureVo.setPictureUrl(picture.getPictureUrl());
-
+        BeanUtil.copyProperties(picture, uploadPictureVo);
         return uploadPictureVo;
     }
 
+
+    /**
+     * 使用 图片
+     *
+     * @param pictureId 使用图片的id
+     * @param request     请求
+     * @return 返回是否编辑成功
+     */
+    @Override
+    public Boolean usedPicture(Long pictureId, HttpServletRequest request) {
+        // 1. 校验参数
+        if (pictureId == null) {
+            throw new BusinessException(ErrorEnums.PARAMS_ERROR, "图片id不能为空");
+        }
+
+        // 2. 校验登录
+        UserVo userVo = userService.userGetLoginInfo(request);
+        if (userVo == null) {
+            throw new BusinessException(ErrorEnums.NOT_AUTH, "未登录");
+        }
+
+        // 3. 封装修改数据
+        Picture picture = new Picture();
+        picture.setId(pictureId);
+        picture.setUsedUserId(userVo.getId());
+
+        // 4. 更新操作
+        this.updateById(picture);
+        return true;
+    }
 
     /**
      * 获取文件后缀

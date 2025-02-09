@@ -14,6 +14,7 @@ import com.ym.blogBackEnd.config.UserConfig;
 import com.ym.blogBackEnd.constant.UserConstant;
 import com.ym.blogBackEnd.enums.EmailCodeTypeEnums;
 import com.ym.blogBackEnd.enums.ErrorEnums;
+import com.ym.blogBackEnd.enums.UserRoleEnums;
 import com.ym.blogBackEnd.exception.BusinessException;
 import com.ym.blogBackEnd.model.domain.User;
 import com.ym.blogBackEnd.model.dto.user.UserLoginDto;
@@ -25,11 +26,13 @@ import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
+import com.ym.blogBackEnd.service.PictureService;
 import com.ym.blogBackEnd.service.UserService;
 import com.ym.blogBackEnd.mapper.UserMapper;
 import com.ym.blogBackEnd.utils.EmailUtils;
 import com.ym.blogBackEnd.utils.RedisUtils;
 import com.ym.blogBackEnd.utils.ThrowUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +62,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserConfig userConfig;
 
+    @Resource
+    @Lazy
+    private PictureService pictureService;
 
     /**
      * 用户 发送邮箱验证码
@@ -314,8 +320,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         BeanUtil.copyProperties(userEditDto, userUpdate);
         userUpdate.setId(userVo.getId());
         userUpdate.setEditTime(new Date());
-        // 3. 更新
-        this.updateById(userUpdate);
+
+        // 3.更新
+        boolean result = this.updateById(userUpdate);
+        if (!result) {
+            throw new BusinessException(ErrorEnums.OP_ERROR, "用户更新失败");
+        }
+
+        // 这里插入一个 如果 存在头像编辑，那一定会有头像id存在,我需要去修改图片表数据
+        Long avatarId = userEditDto.getAvatarId();
+        if (avatarId != null) {
+            pictureService.usedPicture(avatarId, request);
+        }
     }
 
 
@@ -323,11 +339,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * 管理员 添加用户
      *
      * @param adminAddUserDto 管理员 添加用户 请求 类
-     * @param request http
+     * @param request         http
      * @return 用户id
      */
     @Override
-    public Long adminAddUser(AdminAddUserDto adminAddUserDto,HttpServletRequest request) {
+    public Long adminAddUser(AdminAddUserDto adminAddUserDto, HttpServletRequest request) {
         String userAccount = adminAddUserDto.getUserAccount();
         if (userAccount.length() < userConfig.getAccountMinLength()) {
             throw new BusinessException(ErrorEnums.PARAMS_ERROR, "用户账号不能小于" + userConfig.getAccountMinLength() + "位");
@@ -660,6 +676,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorEnums.NOT_AUTH, "用户未登录");
         }
         return user.getUserRole().equals(UserConstant.USER_ROLE_BOSS);
+    }
+
+
+    /**
+     * 判断当前 用户 权限是不是 管理员以上
+     *
+     * @param userVo http请求
+     * @return true 是 false 不是
+     */
+    @Override
+    public Boolean isAdmin(UserVo userVo) {
+        if (userVo == null || userVo.getUserRole() == null) {
+            throw new BusinessException(ErrorEnums.NOT_AUTH, "未登录");
+        }
+
+        String userRole = userVo.getUserRole();
+        UserRoleEnums roleEnums = UserRoleEnums.getRole(userRole);
+        if (roleEnums == null) {
+            throw new BusinessException(ErrorEnums.NOT_AUTH, "用户未登录");
+        }
+        return UserRoleEnums.ADMIN.equals(roleEnums) || UserRoleEnums.BOSS.equals(roleEnums);
     }
 }
 

@@ -29,6 +29,11 @@ public class UploadPictureVo implements Serializable {
      */
     private String pictureUrl;
 
+    /**
+     * 图片名称
+     */
+    private String pictureName;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

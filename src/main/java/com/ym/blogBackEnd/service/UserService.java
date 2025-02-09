@@ -135,4 +135,13 @@ public interface UserService extends IService<User> {
      * @return true 是 false 不是
      */
     public Boolean isBoss(HttpServletRequest request);
+
+
+    /**
+     * 判断当前 用户 权限是不是 管理员以上
+     * @param userVo http请求
+     * @return true 是 false 不是
+     */
+    public Boolean isAdmin(UserVo userVo);
+
 }

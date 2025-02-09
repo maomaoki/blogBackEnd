@@ -27,6 +27,12 @@ public class UserEditDto implements Serializable {
     private String userAvatar;
 
     /**
+     * 用户头像 id(跟用户操作没有关系)
+     */
+    private Long avatarId;
+
+
+    /**
      * 用户标签 - json字符串
      */
     private String userTags;

@@ -27,4 +27,13 @@ public interface PictureService extends IService<Picture> {
                                   UploadPictureDto uploadPictureDto,
                                   HttpServletRequest request);
 
+
+    /**
+     * 使用 图片
+     * @param pictureId 使用图片的id
+     * @param request 请求
+     * @return 返回是否编辑成功
+     */
+    Boolean usedPicture(Long pictureId,HttpServletRequest request);
+
 }
