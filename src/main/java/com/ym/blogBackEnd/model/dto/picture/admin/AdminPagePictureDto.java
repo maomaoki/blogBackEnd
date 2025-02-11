@@ -24,10 +24,6 @@ public class AdminPagePictureDto extends PageRequest implements Serializable {
     private Long id;
 
 
-    /**
-     * 图片物理存放地址
-     */
-    private String picturePath;
 
     /**
      * 图片上传方式
@@ -39,10 +35,6 @@ public class AdminPagePictureDto extends PageRequest implements Serializable {
      */
     private String pictureName;
 
-    /**
-     * 简介
-     */
-    private String pictureIntroduction;
 
     /**
      * 分类

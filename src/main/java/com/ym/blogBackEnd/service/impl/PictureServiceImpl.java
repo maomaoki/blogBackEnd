@@ -2,6 +2,11 @@ package com.ym.blogBackEnd.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.config.PictureConfig;
 import com.ym.blogBackEnd.constant.PictureConstant;
@@ -9,18 +14,26 @@ import com.ym.blogBackEnd.enums.ErrorEnums;
 import com.ym.blogBackEnd.exception.BusinessException;
 import com.ym.blogBackEnd.manager.picture.PictureManager;
 import com.ym.blogBackEnd.model.domain.Picture;
+import com.ym.blogBackEnd.model.domain.User;
 import com.ym.blogBackEnd.model.dto.picture.UploadPictureDto;
+import com.ym.blogBackEnd.model.dto.picture.admin.AdminPagePictureDto;
+import com.ym.blogBackEnd.model.vo.picture.PictureVo;
 import com.ym.blogBackEnd.model.vo.picture.UploadPictureVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.PictureService;
 import com.ym.blogBackEnd.mapper.PictureMapper;
 import com.ym.blogBackEnd.service.UserService;
+import com.ym.blogBackEnd.utils.ThrowUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author 54621
@@ -118,7 +131,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
      * 使用 图片
      *
      * @param pictureId 使用图片的id
-     * @param request     请求
+     * @param request   请求
      * @return 返回是否编辑成功
      */
     @Override
@@ -142,6 +155,136 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         // 4. 更新操作
         this.updateById(picture);
         return true;
+    }
+
+
+    /**
+     * 管理员分页查询图片
+     *
+     * @param adminPagePictureDto 分页参数
+     * @return 返回图片分页结果
+     */
+    @Override
+    public Page<PictureVo> adminPicturePage(AdminPagePictureDto adminPagePictureDto) {
+        // 1. 校验参数
+        ThrowUtils.ifThrow(
+                adminPagePictureDto == null,
+                ErrorEnums.PARAMS_ERROR,
+                "查询参数不能为空!"
+        );
+
+
+        // 2. 封装查询条件
+        QueryWrapper<Picture> queryWrapper = queryWrapper(adminPagePictureDto);
+
+
+        // 3. 查询
+        Integer pageSize = adminPagePictureDto.getPageSize();
+        Integer pageNum = adminPagePictureDto.getPageNum();
+
+        Page<Picture> page = this.page(new Page<>(pageNum, pageSize), queryWrapper);
+
+        // 4. 封装返回结果
+        Page<PictureVo> pictureVoPage = new Page<>(pageNum, pageSize, page.getTotal());
+        pictureVoPage.setRecords(pictureListToVos(page.getRecords()));
+        return pictureVoPage;
+    }
+
+    /**
+     * 封装查询条件
+     *
+     * @param adminPagePictureDto 分页参数
+     * @return 查询条件
+     */
+    private QueryWrapper<Picture> queryWrapper(AdminPagePictureDto adminPagePictureDto) {
+        ThrowUtils.ifThrow(
+                adminPagePictureDto == null,
+                ErrorEnums.PARAMS_ERROR,
+                "请求参数不能为空"
+        );
+
+
+        Long id = adminPagePictureDto.getId();
+        String pictureUpload = adminPagePictureDto.getPictureUpload();
+        String pictureName = adminPagePictureDto.getPictureName();
+        String pictureCategory = adminPagePictureDto.getPictureCategory();
+        String pictureTags = adminPagePictureDto.getPictureTags();
+        Long pictureSize = adminPagePictureDto.getPictureSize();
+        String pictureFormat = adminPagePictureDto.getPictureFormat();
+        Long createUserId = adminPagePictureDto.getCreateUserId();
+        Integer reviewStatus = adminPagePictureDto.getReviewStatus();
+        Date reviewStartTime = adminPagePictureDto.getReviewStartTime();
+        Date reviewEndTime = adminPagePictureDto.getReviewEndTime();
+        Date createStartTime = adminPagePictureDto.getCreateStartTime();
+        Date createEndTime = adminPagePictureDto.getCreateEndTime();
+        String sortField = adminPagePictureDto.getSortField();
+        String sortOrder = adminPagePictureDto.getSortOrder();
+
+
+        QueryWrapper<Picture> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq(ObjUtil.isNotNull(id), "id", id);
+        // 尺寸 应该是 小于或者等于
+        userQueryWrapper.ge(ObjUtil.isNotNull(pictureSize), "pictureSize", pictureSize);
+        userQueryWrapper.eq(ObjUtil.isNotNull(createUserId), "createUserId", createUserId);
+        userQueryWrapper.eq(ObjUtil.isNotNull(reviewStatus), "reviewStatus", reviewStatus);
+
+        userQueryWrapper.eq(StrUtil.isNotBlank(pictureUpload), "pictureUpload", pictureUpload);
+        userQueryWrapper.eq(StrUtil.isNotBlank(pictureCategory), "pictureCategory", pictureCategory);
+        userQueryWrapper.eq(StrUtil.isNotBlank(pictureFormat), "pictureFormat", pictureFormat);
+
+        userQueryWrapper.like(StrUtil.isNotBlank(pictureName), "pictureName", pictureName);
+
+
+        // 标签 需要 拼接查询
+        if (StrUtil.isNotBlank(pictureTags)) {
+            List<String> tagsList = JSONUtil.toList(pictureTags, String.class);
+            tagsList.forEach(tag -> userQueryWrapper.like("pictureTags", "\"" + tag + "\""));
+        }
+
+
+        // 时间范围
+        userQueryWrapper.between(ObjUtil.isNotNull(reviewStartTime) && ObjUtil.isNotNull(reviewEndTime)
+                , "reviewTime", reviewStartTime, reviewEndTime);
+
+        userQueryWrapper.between(ObjUtil.isNotNull(createStartTime) && ObjUtil.isNotNull(createEndTime)
+                , "createTime", createStartTime, createEndTime);
+
+        // 排序字段
+        userQueryWrapper.orderBy(StrUtil.isNotBlank(sortField), "asc".equals(sortOrder), sortField);
+        return userQueryWrapper;
+    }
+
+
+    /**
+     * 图片 转换为 图片脱敏信息
+     *
+     * @param picture 图片
+     * @return 图片脱敏信息
+     */
+    @Override
+    public PictureVo pictureToVo(Picture picture) {
+        if (picture == null) {
+            return null;
+        }
+        PictureVo pictureVo = new PictureVo();
+        BeanUtil.copyProperties(picture, pictureVo);
+        return pictureVo;
+    }
+
+
+    /**
+     * 图片列表 转换为 图片脱敏信息列表
+     *
+     * @param pictures 图片列表
+     * @return 图片脱敏信息列表
+     */
+    @Override
+    public List<PictureVo> pictureListToVos(List<Picture> pictures) {
+        if (pictures == null) {
+            return new ArrayList<>();
+        }
+        return pictures.stream()
+                .map(this::pictureToVo).collect(Collectors.toList());
     }
 
     /**
