@@ -655,7 +655,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * @param userPassword 旧密码
      * @return 加盐后的密码
      */
-    private String saltMd5(String userPassword) {
+    @Override
+    public String saltMd5(String userPassword) {
         return SecureUtil.md5(userPassword + userConfig.getPasswordSalt());
     }
 

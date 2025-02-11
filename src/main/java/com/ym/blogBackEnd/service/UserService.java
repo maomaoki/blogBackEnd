@@ -130,6 +130,14 @@ public interface UserService extends IService<User> {
 
 
     /**
+     * 密码 加盐 转md5
+     *
+     * @param userPassword 旧密码
+     * @return 加盐后的密码
+     */
+    String saltMd5(String userPassword);
+
+    /**
      * 判断当前 用户 权限是不是 系统管理员
      * @param request http请求
      * @return true 是 false 不是

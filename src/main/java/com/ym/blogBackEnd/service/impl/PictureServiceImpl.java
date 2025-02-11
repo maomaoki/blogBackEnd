@@ -151,6 +151,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         Picture picture = new Picture();
         picture.setId(pictureId);
         picture.setUsedUserId(userVo.getId());
+        picture.setEditTime(new Date());
 
         // 4. 更新操作
         this.updateById(picture);
