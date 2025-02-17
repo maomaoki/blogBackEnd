@@ -25,6 +25,11 @@ public class AdminEditArticleDto implements Serializable {
     private String articleBgImage;
 
     /**
+     * 背景图 id (用于修改图片用处)
+     */
+    private Long imageId;
+
+    /**
      * 文章标题
      */
     private String articleTitle;
@@ -49,11 +54,6 @@ public class AdminEditArticleDto implements Serializable {
      */
     private String articleCategory;
 
-
-    /**
-     * 文章作者
-     */
-    private String articleAuthor;
 
     /**
      * 文章是否加密 0不加密(默认),1加密

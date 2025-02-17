@@ -19,6 +19,7 @@ import com.ym.blogBackEnd.model.vo.article.ArticleVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.mapper.ArticleMapper;
+import com.ym.blogBackEnd.service.PictureService;
 import com.ym.blogBackEnd.service.UserService;
 import com.ym.blogBackEnd.utils.ThrowUtils;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private PictureService pictureService;
 
 
     /**
@@ -79,11 +83,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         article.setArticleAuthor(userVo.getUserName());
         article.setEncryptPassword(encryptPassword);
 
-        if(StrUtil.isBlank(article.getArticleIntroduction())){
+        if (StrUtil.isBlank(article.getArticleIntroduction())) {
             // 如果文章简介为空,则默认为 内容 前 30 字符
             article.setArticleIntroduction(StrUtil.sub(article.getArticleContent(), 0, 30));
         }
 
+        if(!StrUtil.isBlank(article.getArticleBgImage())){
+            // 存在 修改图片用处
+            pictureService.usedPicture(adminAddArticleDto.getImageId(),request);
+        }
         // 4.保存到数据库
         boolean save = save(article);
         ThrowUtils.ifThrow(
@@ -128,9 +136,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      *
      * @param adminEditArticleDto 管理员编辑文章请求类
      * @return 文章id
+     * @ request http
      */
     @Override
-    public Long adminEditArticle(AdminEditArticleDto adminEditArticleDto) {
+    public Long adminEditArticle(AdminEditArticleDto adminEditArticleDto, HttpServletRequest request) {
         // 1.校验参数
         ThrowUtils.ifThrow(
                 adminEditArticleDto == null || adminEditArticleDto.getId() == null,
@@ -147,7 +156,23 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         // 3.更新数据库
         Article article = new Article();
         BeanUtil.copyProperties(adminEditArticleDto, article);
+
+        // 4.补充参数
         article.setEditTime(new Date());
+        UserVo userVo = userService.userGetLoginInfo(request);
+        article.setArticleAuthor(userVo.getUserName());
+
+        // 存在加密 密码就需要加密再存入
+        if (ArticleConstant.IS_ENCRYPT.equals(article.getIsEncrypt())) {
+            article.setEncryptPassword(userService.saltMd5(article.getEncryptPassword()));
+        }
+
+        if(!StrUtil.isBlank(article.getArticleBgImage())){
+            // 存在 修改图片用处
+            pictureService.usedPicture(adminEditArticleDto.getImageId(),request);
+        }
+
+        // 5.更新数据操作
         boolean update = updateById(article);
         ThrowUtils.ifThrow(
                 !update,
@@ -358,9 +383,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         userQueryWrapper.like(StrUtil.isNotBlank(articleTitle), "articleTitle", articleTitle);
         // 这里可以查询 简介 或者 文章
         userQueryWrapper.like
-                        (StrUtil.isNotBlank(articleCondition), "articleIntroduction", articleCondition)
+                        (StrUtil.isNotBlank(articleCondition), "articleIntroduction", StrUtil.trimStart(articleCondition))
                 .or()
-                .like(StrUtil.isNotBlank(articleCondition), "articleContent", articleCondition);
+                .like(StrUtil.isNotBlank(articleCondition), "articleContent", StrUtil.trimStart(articleCondition))
+                .or()
+                .like(StrUtil.isNotBlank(articleCondition), "articleTitle", StrUtil.trimStart(articleCondition));
 
         userQueryWrapper.eq(StrUtil.isNotBlank(articleCategory), "articleCategory", articleCategory);
         userQueryWrapper.eq(StrUtil.isNotBlank(articleAuthor), "articleAuthor", articleAuthor);

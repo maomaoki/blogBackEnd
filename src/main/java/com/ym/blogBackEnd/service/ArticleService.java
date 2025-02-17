@@ -40,11 +40,11 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 管理员编辑文章
-     *
      * @param adminEditArticleDto 管理员编辑文章请求类
+     * @param request            请求
      * @return 文章id
      */
-    Long adminEditArticle(AdminEditArticleDto adminEditArticleDto);
+    Long adminEditArticle(AdminEditArticleDto adminEditArticleDto,HttpServletRequest request);
 
 
     /**

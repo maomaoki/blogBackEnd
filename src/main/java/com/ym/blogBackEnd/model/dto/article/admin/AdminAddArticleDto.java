@@ -25,6 +25,11 @@ public class AdminAddArticleDto implements Serializable {
     private String articleBgImage;
 
     /**
+     *  背景图 id (用于修改图片用处)
+     */
+    private Long imageId;
+
+    /**
      * 文章标题
      */
     private String articleTitle;

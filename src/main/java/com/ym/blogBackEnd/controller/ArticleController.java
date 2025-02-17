@@ -51,8 +51,8 @@ public class ArticleController {
 
     @PostMapping("admin/edit")
     @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
-    public Result<Long> adminEditArticle(@RequestBody AdminEditArticleDto adminEditArticleDto) {
-        Long articleId = articleService.adminEditArticle(adminEditArticleDto);
+    public Result<Long> adminEditArticle(@RequestBody AdminEditArticleDto adminEditArticleDto,HttpServletRequest request) {
+        Long articleId = articleService.adminEditArticle(adminEditArticleDto,request);
         return ResUtils.success(articleId, "编辑成功");
     }
 
