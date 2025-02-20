@@ -39,6 +39,11 @@ public class AdminUpdateUserDto implements Serializable {
      */
     private String userAvatar;
 
+    /**
+     * 用户头像 id(跟用户操作没有关系)
+     */
+    private Long avatarId;
+
 
     /**
      * 用户状态：0-正常，1-封禁

@@ -482,7 +482,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setId(id);
         user.setUserName(userName);
         user.setUserRole(userRole);
-        user.setUserAvatar(userAvatar);
+        // 如果存在头像数据 那就要更新一下图片表
+        if (!StrUtil.isBlank(userAvatar)) {
+            user.setUserAvatar(userAvatar);
+            // 更新图片表
+            pictureService.usedPicture(adminUpdateUserDto.getAvatarId(), request);
+        }
+
+
         user.setUserStatus(userStatus);
         user.setEditTime(new Date());
 
