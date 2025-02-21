@@ -1,22 +1,29 @@
-package com.ym.blogBackEnd.model.domain;
+package com.ym.blogBackEnd.model.vo.comment;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
+import java.util.List;
 
 /**
- * 评论表
- * @TableName comment
+ * @Title: CommentVo
+ * @Author YunMao
+ * @Package com.ym.blogBackEnd.model.vo.comment
+ * @Date 2025/2/20 21:42
+ * @description: 评论返回vo
  */
-@TableName(value ="comment")
 @Data
-public class Comment implements Serializable {
+public class CommentVo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * 评论主键id
      */
-    @TableId(type = IdType.ASSIGN_ID)
+
     private Long id;
 
     /**
@@ -65,26 +72,6 @@ public class Comment implements Serializable {
     private Integer isShow;
 
     /**
-     * 审核人 id
-     */
-    private Long reviewUserId;
-
-    /**
-     * 审核状态 0待审核 1 审核通过 2 审核拒绝
-     */
-    private Integer reviewStatus;
-
-    /**
-     * 审核原因
-     */
-    private String reviewReason;
-
-    /**
-     * 审核时间
-     */
-    private Date reviewTime;
-
-    /**
      * 编辑时间
      */
     private Date editTime;
@@ -100,11 +87,8 @@ public class Comment implements Serializable {
     private Date updateTime;
 
     /**
-     * 是否删除
+     * 子评论
      */
-    @TableLogic
-    private Integer isDelete;
+    private List<CommentVo> childrenComments;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

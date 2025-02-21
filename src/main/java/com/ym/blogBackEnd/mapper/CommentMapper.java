@@ -1,7 +1,7 @@
 package com.ym.blogBackEnd.mapper;
 
-import com.ym.blogBackEnd.model.domain.Comment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ym.blogBackEnd.model.domain.Comment;
 
 /**
 * @author 54621

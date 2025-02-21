@@ -15,6 +15,10 @@
             <result property="isHot" column="isHot" />
             <result property="isSticky" column="isSticky" />
             <result property="isShow" column="isShow" />
+            <result property="reviewUserId" column="reviewUserId" />
+            <result property="reviewStatus" column="reviewStatus" />
+            <result property="reviewReason" column="reviewReason" />
+            <result property="reviewTime" column="reviewTime" />
             <result property="editTime" column="editTime" />
             <result property="createTime" column="createTime" />
             <result property="updateTime" column="updateTime" />
@@ -23,7 +27,8 @@
 
     <sql id="Base_Column_List">
         id,articleId,content,userId,replyUserId,forebearId,
-        fatherId,isHot,isSticky,isShow,editTime,
-        createTime,updateTime,isDelete
+        fatherId,isHot,isSticky,isShow,reviewUserId,
+        reviewStatus,reviewReason,reviewTime,editTime,createTime,
+        updateTime,isDelete
     </sql>
 </mapper>
