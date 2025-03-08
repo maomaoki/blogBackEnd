@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ym-blog
     username: root
-    password: yunmao
+    password: root
   session:
     store-type: redis
     timeout: 3600 # session 超时时间（秒）
@@ -80,6 +80,7 @@ ym:
     avatar-dir: avatar/ # 头像上传目录
     blog-dir: blog/ # 博客图片上传目录
     other-dir: other/ # 其他图片上传目录
+    banner-dir: banner/ # banner图片上传目录
     max-file-size: 3 # 图片上传最大大小（MB）
     allowed-file-types:  # 允许上传的文件类型
       - jpg

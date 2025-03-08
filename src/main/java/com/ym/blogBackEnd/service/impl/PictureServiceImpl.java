@@ -341,6 +341,9 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         if (PictureConstant.PICTURE_CATEGORY_AVATAR.equals(pictureCategory)) {
             return pictureConfig.getAvatarDir();
         }
+        if (PictureConstant.PICTURE_CATEGORY_BANNER.equals(pictureCategory)) {
+            return pictureConfig.getBannerDir();
+        }
         return pictureConfig.getOtherDir();
     }
 

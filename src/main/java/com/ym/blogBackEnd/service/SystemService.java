@@ -1,21 +1,7 @@
 package com.ym.blogBackEnd.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.ym.blogBackEnd.model.domain.User;
-import com.ym.blogBackEnd.model.dto.user.UserEditDto;
-import com.ym.blogBackEnd.model.dto.user.UserLoginDto;
-import com.ym.blogBackEnd.model.dto.user.UserRegisterDto;
-import com.ym.blogBackEnd.model.dto.user.UserSendEmailCodeDto;
-import com.ym.blogBackEnd.model.dto.user.admin.AdminAddUserDto;
-import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
-import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
-import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
+import com.ym.blogBackEnd.model.vo.system.BannerInfoVo;
 import com.ym.blogBackEnd.model.vo.system.SystemInfoVo;
-import com.ym.blogBackEnd.model.vo.user.UserVo;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author 54621
@@ -32,6 +18,9 @@ public interface SystemService {
     SystemInfoVo getSystemInfo();
 
 
-
-
+    /**
+     * 获取 banner 信息
+     * @return banner 信息
+     */
+    BannerInfoVo getBannerInfo();
 }

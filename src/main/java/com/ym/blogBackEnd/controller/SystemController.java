@@ -1,6 +1,7 @@
 package com.ym.blogBackEnd.controller;
 
 import com.ym.blogBackEnd.common.response.Result;
+import com.ym.blogBackEnd.model.vo.system.BannerInfoVo;
 import com.ym.blogBackEnd.model.vo.system.SystemInfoVo;
 import com.ym.blogBackEnd.service.SystemService;
 import com.ym.blogBackEnd.utils.ResUtils;
@@ -27,11 +28,18 @@ public class SystemController {
     private SystemService systemService;
 
 
+
     @GetMapping("/info")
     public Result<SystemInfoVo> getSystemInfo() {
         SystemInfoVo systemInfo = systemService.getSystemInfo();
         return ResUtils.success(systemInfo, "查询成功");
     }
 
+    @GetMapping("/bannerInfo")
+    public Result<BannerInfoVo> getBannerInfo() {
+        BannerInfoVo bannerInfoVo = systemService.getBannerInfo();
+        return ResUtils.success(bannerInfoVo,"查询成功");
+
+    }
 
 }

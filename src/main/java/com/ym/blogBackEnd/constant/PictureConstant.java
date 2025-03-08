@@ -25,6 +25,11 @@ public interface PictureConstant {
     String PICTURE_CATEGORY_OTHER = "other";
 
     /**
+     * 图片分类 - banner
+     */
+    String PICTURE_CATEGORY_BANNER = "banner";
+
+    /**
      * 图片上传方式 - 本地
      */
     String PICTURE_UPLOAD_LOCAL = "local";

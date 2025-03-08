@@ -38,6 +38,11 @@ public class PictureConfig {
      */
     private String otherDir;
 
+    /**
+     * BANNER图片上传目录
+     */
+    private String bannerDir;
+
 
     /**
      * 图片上传最大大小（MB）
