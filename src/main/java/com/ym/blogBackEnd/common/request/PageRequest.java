@@ -33,4 +33,15 @@ public class PageRequest {
      */
     private String sortOrder;
 
+
+    /**
+     * 时间 排序 字段
+     *
+     */
+    private String timeSortField;
+    /**
+     * 时间 排序 方式
+     */
+    private String timeSortOrder;
+
 }

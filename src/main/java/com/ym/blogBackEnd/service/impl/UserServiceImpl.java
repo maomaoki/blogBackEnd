@@ -690,7 +690,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     /**
      * 判断当前 用户 权限是不是 管理员以上
      *
-     * @param userVo http请求
+     * @param request http请求
+     * @return true 是 false 不是
+     */
+    @Override
+    public Boolean isAdmin(HttpServletRequest request) {
+        UserVo userVo = userGetLoginInfo(request);
+        return isAdmin(userVo);
+    }
+
+    /**
+     * 判断当前 用户 权限是不是 管理员以上
+     *
+     * @param userVo 用户脱敏类
      * @return true 是 false 不是
      */
     @Override
@@ -703,6 +715,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         UserRoleEnums roleEnums = UserRoleEnums.getRole(userRole);
         if (roleEnums == null) {
             throw new BusinessException(ErrorEnums.NOT_AUTH, "用户未登录");
+        }
+        return UserRoleEnums.ADMIN.equals(roleEnums) || UserRoleEnums.BOSS.equals(roleEnums);
+    }
+
+
+    /**
+     * 这个 专门 给 文章 断言 是否 为 管理员(不存在业务操作)
+     *
+     * @param request 请求
+     * @return true 是 false 不是
+     */
+    @Override
+    public Boolean articleAssertIsAdmin(HttpServletRequest request) {
+
+        // 只需要 判断 是否 登录 和 是否 为 管理员以上 权限
+        Object attribute = request.getSession().getAttribute(UserConstant.USER_LOGIN_KEY);
+        User oldUser = (User) attribute;
+        // 要用 用户id 去数据库重新查询一次 要不然会出现数据不同步情况
+        if (oldUser == null) {
+            return false;
+        }
+        Long userId = oldUser.getId();
+        User user = this.getById(userId);
+        if (user == null) {
+            return false;
+        }
+
+        // 这里 也可以 根据状态区分一下(可以清空session)
+        Integer userStatus = user.getUserStatus();
+        if (userStatus.equals(UserConstant.USER_STATUS_FREEZE)) {
+            request.getSession().removeAttribute(UserConstant.USER_LOGIN_KEY);
+            return false;
+        }
+
+        String userRole = user.getUserRole();
+        UserRoleEnums roleEnums = UserRoleEnums.getRole(userRole);
+        if(roleEnums == null){
+            return false;
         }
         return UserRoleEnums.ADMIN.equals(roleEnums) || UserRoleEnums.BOSS.equals(roleEnums);
     }

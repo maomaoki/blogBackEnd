@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.enums.ErrorEnums;
 import com.ym.blogBackEnd.model.domain.Comment;
 import com.ym.blogBackEnd.model.dto.comment.CommentSaveDto;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
 import com.ym.blogBackEnd.model.vo.comment.CommentVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
@@ -62,9 +62,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
 
         // 3. 校验是否存在此文章
         Long articleId = commentSaveDto.getArticleId();
-        ArticleVo articleVo = articleService.getByArticleId(articleId);
+        ArticlePageVo articlePageVo = articleService.getByArticleId(articleId);
         ThrowUtils.ifThrow(
-                articleVo == null,
+                articlePageVo == null,
                 ErrorEnums.NOT_FOUND_ERROR,
                 "文章不存在");
 
@@ -89,9 +89,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
     public List<CommentVo> articleCommentList(Long articleId) {
 
         // 1. 校验是否存在此文章
-        ArticleVo articleVo = articleService.getByArticleId(articleId);
+        ArticlePageVo articlePageVo = articleService.getByArticleId(articleId);
         ThrowUtils.ifThrow(
-                articleVo == null,
+                articlePageVo == null,
                 ErrorEnums.NOT_FOUND_ERROR,
                 "文章不存在");
 

@@ -10,10 +10,9 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.utils.ResUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -51,16 +50,24 @@ public class ArticleController {
 
     @PostMapping("admin/edit")
     @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
-    public Result<Long> adminEditArticle(@RequestBody AdminEditArticleDto adminEditArticleDto,HttpServletRequest request) {
-        Long articleId = articleService.adminEditArticle(adminEditArticleDto,request);
+    public Result<Long> adminEditArticle(@RequestBody AdminEditArticleDto adminEditArticleDto, HttpServletRequest request) {
+        Long articleId = articleService.adminEditArticle(adminEditArticleDto, request);
         return ResUtils.success(articleId, "编辑成功");
     }
 
 
     @PostMapping("admin/page")
     @CheckAuth(mustRole = UserConstant.USER_ROLE_ADMIN)
-    public Result<Page<ArticleVo>> adminPageArticle(@RequestBody AdminPageArticleDto adminPageArticleDto) {
-        Page<ArticleVo> articleVoPage = articleService.adminPageArticle(adminPageArticleDto);
+    public Result<Page<ArticlePageVo>> adminPageArticle(
+            @RequestBody AdminPageArticleDto adminPageArticleDto, HttpServletRequest request) {
+        Page<ArticlePageVo> articleVoPage = articleService.adminPageArticle(adminPageArticleDto);
+        return ResUtils.success(articleVoPage, "查询成功");
+    }
+
+    @PostMapping("page")
+    public Result<Page<ArticlePageVo>> pageArticle(
+            @RequestBody AdminPageArticleDto adminPageArticleDto) {
+        Page<ArticlePageVo> articleVoPage = articleService.pageArticle(adminPageArticleDto);
         return ResUtils.success(articleVoPage, "查询成功");
     }
 
@@ -73,17 +80,16 @@ public class ArticleController {
 
 
     @GetMapping("get/{id}")
-    public Result<ArticleVo> getArticleById(@PathVariable String id) {
-        ArticleVo articleVo = articleService.getByArticleId(Long.valueOf(id));
-        return ResUtils.success(articleVo, "查询成功");
+    public Result<ArticlePageVo> getArticleById(@PathVariable String id) {
+        ArticlePageVo articlePageVo = articleService.getByArticleId(Long.valueOf(id));
+        return ResUtils.success(articlePageVo, "查询成功");
     }
 
     @PostMapping("get/encrypt")
-    public Result<ArticleVo> getArticleByIdAndPassword(@RequestBody GetArticleByPasswordDto getArticleByPasswordDto) {
-        ArticleVo articleVo = articleService.getByArticleIdAndPassword(getArticleByPasswordDto.getId(), getArticleByPasswordDto.getPassword());
-        return ResUtils.success(articleVo, "查询成功");
+    public Result<ArticlePageVo> getArticleByIdAndPassword(@RequestBody GetArticleByPasswordDto getArticleByPasswordDto) {
+        ArticlePageVo articlePageVo = articleService.getByArticleIdAndPassword(getArticleByPasswordDto.getId(), getArticleByPasswordDto.getPassword());
+        return ResUtils.success(articlePageVo, "查询成功");
     }
 
-    
 
 }

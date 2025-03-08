@@ -7,7 +7,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -60,7 +60,7 @@ public interface ArticleService extends IService<Article> {
      * @param id 文章id
      * @return 文章
      */
-    ArticleVo getByArticleId(Long id);
+    ArticlePageVo getByArticleId(Long id);
 
 
     /**
@@ -69,8 +69,7 @@ public interface ArticleService extends IService<Article> {
      * @param password 加密 密码
      * @return 文章
      */
-    ArticleVo getByArticleIdAndPassword(Long id,String password);
-
+    ArticlePageVo getByArticleIdAndPassword(Long id, String password);
 
 
 
@@ -81,7 +80,16 @@ public interface ArticleService extends IService<Article> {
      * @param adminPageArticleDto 管理员分页查询文章请求类
      * @return 文章分页
      */
-    Page<ArticleVo> adminPageArticle(AdminPageArticleDto adminPageArticleDto);
+    Page<ArticlePageVo> adminPageArticle(AdminPageArticleDto adminPageArticleDto);
+
+
+    /**
+     * 普通用户 查询 文章 列表
+     * @param adminPageArticleDto 管理员分页查询文章请求类
+     * @return 文章分页
+     */
+    Page<ArticlePageVo> pageArticle(AdminPageArticleDto adminPageArticleDto);
+
 
 
     /**
@@ -90,7 +98,7 @@ public interface ArticleService extends IService<Article> {
      * @param article 文章类
      * @return 文章vo
      */
-    ArticleVo articleToVo(Article article);
+    ArticlePageVo articleToVo(Article article);
 
 
     /**
@@ -99,5 +107,10 @@ public interface ArticleService extends IService<Article> {
      * @param articles 文章列表
      * @return 文章vo列表
      */
-    List<ArticleVo> articleListToVos(List<Article> articles);
+    List<ArticlePageVo> articleListToVos(List<Article> articles);
+
+
+
+
+
 }

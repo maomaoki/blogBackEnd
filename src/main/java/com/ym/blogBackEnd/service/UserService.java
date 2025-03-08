@@ -79,10 +79,10 @@ public interface UserService extends IService<User> {
      * 管理员 添加用户
      *
      * @param adminAddUserDto 管理员 添加用户 请求 类
-     * @param request http
+     * @param request         http
      * @return 用户id
      */
-    public Long adminAddUser(AdminAddUserDto adminAddUserDto,HttpServletRequest request);
+    public Long adminAddUser(AdminAddUserDto adminAddUserDto, HttpServletRequest request);
 
 
     /**
@@ -98,9 +98,9 @@ public interface UserService extends IService<User> {
      * 管理员 更新 用户
      *
      * @param adminUpdateUserDto 管理员 更新 用户 请求类
-     * @param  request http请求
+     * @param request            http请求
      */
-    public void adminUpdateUser(AdminUpdateUserDto adminUpdateUserDto,HttpServletRequest request);
+    public void adminUpdateUser(AdminUpdateUserDto adminUpdateUserDto, HttpServletRequest request);
 
 
     /**
@@ -139,6 +139,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 判断当前 用户 权限是不是 系统管理员
+     *
      * @param request http请求
      * @return true 是 false 不是
      */
@@ -147,9 +148,27 @@ public interface UserService extends IService<User> {
 
     /**
      * 判断当前 用户 权限是不是 管理员以上
-     * @param userVo http请求
+     *
+     * @param userVo 用户 脱敏 类
      * @return true 是 false 不是
      */
     public Boolean isAdmin(UserVo userVo);
+
+
+    /**
+     * 判断当前 用户 权限是不是 管理员以上
+     *
+     * @param request http请求
+     * @return true 是 false 不是
+     */
+    public Boolean isAdmin(HttpServletRequest request);
+
+
+    /**
+     * 这个 专门 给 文章 断言 是否 为 管理员(不存在业务操作)
+     * @param request 请求
+     * @return true 是 false 不是
+     */
+    public Boolean articleAssertIsAdmin(HttpServletRequest request);
 
 }

@@ -10,12 +10,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.constant.ArticleConstant;
 import com.ym.blogBackEnd.enums.ErrorEnums;
 import com.ym.blogBackEnd.model.domain.Article;
-import com.ym.blogBackEnd.model.domain.Picture;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.mapper.ArticleMapper;
@@ -88,9 +87,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             article.setArticleIntroduction(StrUtil.sub(article.getArticleContent(), 0, 30));
         }
 
-        if(!StrUtil.isBlank(article.getArticleBgImage())){
+        if (!StrUtil.isBlank(article.getArticleBgImage())) {
             // 存在 修改图片用处
-            pictureService.usedPicture(adminAddArticleDto.getImageId(),request);
+            pictureService.usedPicture(adminAddArticleDto.getImageId(), request);
         }
         // 4.保存到数据库
         boolean save = save(article);
@@ -167,9 +166,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
             article.setEncryptPassword(userService.saltMd5(article.getEncryptPassword()));
         }
 
-        if(!StrUtil.isBlank(article.getArticleBgImage())){
+        // TODO 图片修改
+        if (ObjUtil.isNotNull(adminEditArticleDto.getImageId())) {
             // 存在 修改图片用处
-            pictureService.usedPicture(adminEditArticleDto.getImageId(),request);
+            pictureService.usedPicture(adminEditArticleDto.getImageId(), request);
         }
 
         // 5.更新数据操作
@@ -184,21 +184,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
 
     /**
-     * 管理员分页查询文章
+     * 管理员 分页 查询文章
      *
      * @param adminPageArticleDto 管理员分页查询文章请求类
      * @return 文章分页
      */
     @Override
-    public Page<ArticleVo> adminPageArticle(AdminPageArticleDto adminPageArticleDto) {
+    public Page<ArticlePageVo> adminPageArticle(AdminPageArticleDto adminPageArticleDto) {
         // 1.校验参数
         ThrowUtils.ifThrow(
                 adminPageArticleDto == null,
                 ErrorEnums.PARAMS_ERROR,
                 "参数错误");
-
         Integer pageSize = adminPageArticleDto.getPageSize();
         Integer pageNum = adminPageArticleDto.getPageNum();
+
 
         // 2.封装查询参数
         QueryWrapper<Article> queryWrapper = queryWrapper(adminPageArticleDto);
@@ -207,7 +207,48 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         Page<Article> articlePage = this.page(new Page<>(pageNum, pageSize), queryWrapper);
 
         // 4.封装返回参数
-        Page<ArticleVo> articleVoPage = new Page<>(pageNum, pageSize, articlePage.getTotal());
+        Page<ArticlePageVo> articleVoPage = new Page<>(pageNum, pageSize, articlePage.getTotal());
+        articleVoPage.setRecords(articleListToVos(articlePage.getRecords()));
+        return articleVoPage;
+    }
+
+
+    /**
+     * 用户 查询 文章 列表
+     *
+     * @param adminPageArticleDto 管理员分页查询文章请求类
+     * @return 文章分页
+     */
+    @Override
+    public Page<ArticlePageVo> pageArticle(AdminPageArticleDto adminPageArticleDto) {
+        // 1.校验参数
+        ThrowUtils.ifThrow(
+                adminPageArticleDto == null,
+                ErrorEnums.PARAMS_ERROR,
+                "参数错误");
+
+        Integer pageNum = adminPageArticleDto.getPageNum();
+
+        // 这里 需要  做 条数 限制 防止 爬虫 一次性 崩坏 服务器
+
+        // 不是 就限制 条数(默认10条)
+        // 还需要 限制 查询 只能 查询 发布的 文章
+        Integer pageSize = adminPageArticleDto.getPageSize();
+        if (adminPageArticleDto.getPageSize() > 10) {
+            pageSize = 10;
+        }
+
+        adminPageArticleDto.setArticleStatus(ArticleConstant.ARTICLE_STATUS_PUBLISH);
+
+
+        // 2.封装查询参数
+        QueryWrapper<Article> queryWrapper = queryWrapper(adminPageArticleDto);
+
+        // 3.查询数据库
+        Page<Article> articlePage = this.page(new Page<>(pageNum, pageSize), queryWrapper);
+
+        // 4.封装返回参数
+        Page<ArticlePageVo> articleVoPage = new Page<>(pageNum, pageSize, articlePage.getTotal());
         articleVoPage.setRecords(articleListToVos(articlePage.getRecords()));
         return articleVoPage;
     }
@@ -247,7 +288,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章
      */
     @Override
-    public ArticleVo getByArticleId(Long id) {
+    public ArticlePageVo getByArticleId(Long id) {
 
         // 1. 校验参数
         ThrowUtils.ifThrow(
@@ -278,9 +319,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
 
         // 5. 返回文章
-        ArticleVo articleVo = new ArticleVo();
-        BeanUtil.copyProperties(article, articleVo);
-        return articleVo;
+        ArticlePageVo articlePageVo = new ArticlePageVo();
+        BeanUtil.copyProperties(article, articlePageVo);
+        return articlePageVo;
     }
 
 
@@ -292,7 +333,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章
      */
     @Override
-    public ArticleVo getByArticleIdAndPassword(Long id, String password) {
+    public ArticlePageVo getByArticleIdAndPassword(Long id, String password) {
         // 1.校验参数
         ThrowUtils.ifThrow(
                 id == null || password == null,
@@ -313,9 +354,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 "密码错误");
 
         // 3.验证通过返回
-        ArticleVo articleVo = new ArticleVo();
-        BeanUtil.copyProperties(article, articleVo);
-        return articleVo;
+        ArticlePageVo articlePageVo = new ArticlePageVo();
+        BeanUtil.copyProperties(article, articlePageVo);
+        return articlePageVo;
     }
 
 
@@ -326,13 +367,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章vo
      */
     @Override
-    public ArticleVo articleToVo(Article article) {
+    public ArticlePageVo articleToVo(Article article) {
         if (article == null) {
             return null;
         }
-        ArticleVo articleVo = new ArticleVo();
-        BeanUtil.copyProperties(article, articleVo);
-        return articleVo;
+        ArticlePageVo articlePageVo = new ArticlePageVo();
+        BeanUtil.copyProperties(article, articlePageVo);
+        return articlePageVo;
     }
 
     /**
@@ -342,7 +383,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章vo列表
      */
     @Override
-    public List<ArticleVo> articleListToVos(List<Article> articles) {
+    public List<ArticlePageVo> articleListToVos(List<Article> articles) {
         if (articles == null) {
             return new ArrayList<>();
         }
@@ -376,6 +417,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         Date createEndTime = adminPageArticleDto.getCreateEndTime();
         String sortField = adminPageArticleDto.getSortField();
         String sortOrder = adminPageArticleDto.getSortOrder();
+        String timeSortField = adminPageArticleDto.getTimeSortField();
+        String timeSortOrder = adminPageArticleDto.getTimeSortOrder();
 
 
         QueryWrapper<Article> userQueryWrapper = new QueryWrapper<>();
@@ -407,8 +450,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         userQueryWrapper.between(ObjUtil.isNotNull(createStartTime) && ObjUtil.isNotNull(createEndTime)
                 , "createTime", createStartTime, createEndTime);
 
+
         // 排序字段
         userQueryWrapper.orderBy(StrUtil.isNotBlank(sortField), "asc".equals(sortOrder), sortField);
+        // 时间排序字段
+        userQueryWrapper.orderBy(StrUtil.isNotBlank(timeSortField), "asc".equals(timeSortOrder), timeSortField);
         return userQueryWrapper;
     }
 }
