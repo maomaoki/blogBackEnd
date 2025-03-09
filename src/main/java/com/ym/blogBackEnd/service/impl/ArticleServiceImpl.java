@@ -15,6 +15,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
 import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
+import com.ym.blogBackEnd.model.vo.article.ArticleVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.mapper.ArticleMapper;
@@ -208,7 +209,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
         // 4.封装返回参数
         Page<ArticlePageVo> articleVoPage = new Page<>(pageNum, pageSize, articlePage.getTotal());
-        articleVoPage.setRecords(articleListToVos(articlePage.getRecords()));
+        articleVoPage.setRecords(articleListToPageVos(articlePage.getRecords()));
         return articleVoPage;
     }
 
@@ -249,7 +250,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
         // 4.封装返回参数
         Page<ArticlePageVo> articleVoPage = new Page<>(pageNum, pageSize, articlePage.getTotal());
-        articleVoPage.setRecords(articleListToVos(articlePage.getRecords()));
+        articleVoPage.setRecords(articleListToPageVos(articlePage.getRecords()));
         return articleVoPage;
     }
 
@@ -288,7 +289,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章
      */
     @Override
-    public ArticlePageVo getByArticleId(Long id) {
+    public ArticleVo getByArticleId(Long id) {
 
         // 1. 校验参数
         ThrowUtils.ifThrow(
@@ -319,9 +320,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         }
 
         // 5. 返回文章
-        ArticlePageVo articlePageVo = new ArticlePageVo();
-        BeanUtil.copyProperties(article, articlePageVo);
-        return articlePageVo;
+        return articleToVo(article);
     }
 
 
@@ -333,7 +332,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 文章
      */
     @Override
-    public ArticlePageVo getByArticleIdAndPassword(Long id, String password) {
+    public ArticleVo getByArticleIdAndPassword(Long id, String password) {
         // 1.校验参数
         ThrowUtils.ifThrow(
                 id == null || password == null,
@@ -354,20 +353,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 "密码错误");
 
         // 3.验证通过返回
-        ArticlePageVo articlePageVo = new ArticlePageVo();
-        BeanUtil.copyProperties(article, articlePageVo);
-        return articlePageVo;
+        return articleToVo(article);
     }
 
 
     /**
-     * 文章转 vo
+     * 文章转 pageVo
      *
      * @param article 文章类
-     * @return 文章vo
+     * @return pageVo
      */
     @Override
-    public ArticlePageVo articleToVo(Article article) {
+    public ArticlePageVo articleToPageVo(Article article) {
         if (article == null) {
             return null;
         }
@@ -377,17 +374,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     /**
-     * 文章列表转 vo
+     * 文章列表转 pageVo
      *
      * @param articles 文章列表
-     * @return 文章vo列表
+     * @return 文章pageVo列表
      */
     @Override
-    public List<ArticlePageVo> articleListToVos(List<Article> articles) {
+    public List<ArticlePageVo> articleListToPageVos(List<Article> articles) {
         if (articles == null) {
             return new ArrayList<>();
         }
-        return articles.stream().map(this::articleToVo).collect(Collectors.toList());
+        return articles.stream().map(this::articleToPageVo).collect(Collectors.toList());
     }
 
     /**
@@ -457,6 +454,38 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         userQueryWrapper.orderBy(StrUtil.isNotBlank(timeSortField), "asc".equals(timeSortOrder), timeSortField);
         return userQueryWrapper;
     }
+
+
+    /**
+     * 文章转 page
+     *
+     * @param article 文章类
+     * @return 文章page
+     */
+    @Override
+    public ArticleVo articleToVo(Article article) {
+        if (article == null) {
+            return null;
+        }
+        ArticleVo articleVo = new ArticleVo();
+        BeanUtil.copyProperties(article, articleVo);
+        return articleVo;
+    }
+
+    /**
+     * 文章列表转 vo
+     *
+     * @param articles 文章列表
+     * @return 文章vo列表
+     */
+    @Override
+    public List<ArticleVo> articleListToVos(List<Article> articles) {
+        if (articles == null) {
+            return new ArrayList<>();
+        }
+        return articles.stream().map(this::articleToVo).collect(Collectors.toList());
+    }
+
 }
 
 

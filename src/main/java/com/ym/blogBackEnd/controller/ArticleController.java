@@ -11,6 +11,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
 import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
+import com.ym.blogBackEnd.model.vo.article.ArticleVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import org.springframework.web.bind.annotation.*;
@@ -80,15 +81,15 @@ public class ArticleController {
 
 
     @GetMapping("get/{id}")
-    public Result<ArticlePageVo> getArticleById(@PathVariable String id) {
-        ArticlePageVo articlePageVo = articleService.getByArticleId(Long.valueOf(id));
-        return ResUtils.success(articlePageVo, "查询成功");
+    public Result<ArticleVo> getArticleById(@PathVariable String id) {
+        ArticleVo articleVo = articleService.getByArticleId(Long.valueOf(id));
+        return ResUtils.success(articleVo, "查询成功");
     }
 
     @PostMapping("get/encrypt")
-    public Result<ArticlePageVo> getArticleByIdAndPassword(@RequestBody GetArticleByPasswordDto getArticleByPasswordDto) {
-        ArticlePageVo articlePageVo = articleService.getByArticleIdAndPassword(getArticleByPasswordDto.getId(), getArticleByPasswordDto.getPassword());
-        return ResUtils.success(articlePageVo, "查询成功");
+    public Result<ArticleVo> getArticleByIdAndPassword(@RequestBody GetArticleByPasswordDto getArticleByPasswordDto) {
+        ArticleVo articleVo = articleService.getByArticleIdAndPassword(getArticleByPasswordDto.getId(), getArticleByPasswordDto.getPassword());
+        return ResUtils.success(articleVo, "查询成功");
     }
 
 

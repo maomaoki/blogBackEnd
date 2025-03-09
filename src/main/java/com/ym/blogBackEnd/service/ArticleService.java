@@ -8,6 +8,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
 import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
+import com.ym.blogBackEnd.model.vo.article.ArticleVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -60,7 +61,7 @@ public interface ArticleService extends IService<Article> {
      * @param id 文章id
      * @return 文章
      */
-    ArticlePageVo getByArticleId(Long id);
+    ArticleVo getByArticleId(Long id);
 
 
     /**
@@ -69,7 +70,7 @@ public interface ArticleService extends IService<Article> {
      * @param password 加密 密码
      * @return 文章
      */
-    ArticlePageVo getByArticleIdAndPassword(Long id, String password);
+    ArticleVo getByArticleIdAndPassword(Long id, String password);
 
 
 
@@ -93,21 +94,41 @@ public interface ArticleService extends IService<Article> {
 
 
     /**
-     * 文章转 vo
+     * 文章转 PageVo
      *
      * @param article 文章类
      * @return 文章vo
      */
-    ArticlePageVo articleToVo(Article article);
+    ArticlePageVo articleToPageVo(Article article);
 
 
     /**
-     * 文章列表转 vo
+     * 文章列表转 PageVo
      *
      * @param articles 文章列表
      * @return 文章vo列表
      */
-    List<ArticlePageVo> articleListToVos(List<Article> articles);
+    List<ArticlePageVo> articleListToPageVos(List<Article> articles);
+
+
+
+    /**
+     * 文章转 Vo
+     *
+     * @param article 文章类
+     * @return 文章vo
+     */
+    ArticleVo articleToVo(Article article);
+
+
+    /**
+     * 文章列表转 Vo
+     *
+     * @param articles 文章列表
+     * @return 文章vo列表
+     */
+    List<ArticleVo> articleListToVos(List<Article> articles);
+
 
 
 
