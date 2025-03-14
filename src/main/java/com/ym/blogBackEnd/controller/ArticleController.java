@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Title: ArticleController
@@ -92,5 +95,24 @@ public class ArticleController {
         return ResUtils.success(articleVo, "查询成功");
     }
 
+
+    @GetMapping("/articleCategoryList")
+    public Result<List<String>> getArticleCategoryList() {
+        List<String> articleCategoryList = List.of("前端开发", "后端开发", "测试", "学习", "日常", "无聊", "其他");
+        return ResUtils.success(articleCategoryList, "查询成功");
+    }
+
+
+    @GetMapping("/articleTagsCount")
+    public Result<HashMap<String, Integer>> getArticleTagsCount() {
+        HashMap<String, Integer> articleTagsCount = articleService.getArticleTagsCount();
+        return ResUtils.success(articleTagsCount, "查询成功");
+    }
+
+    @GetMapping("articleTimeCount")
+    public Result<HashMap<String, Integer>> getArticleTimeCount() {
+        HashMap<String, Integer> articleTimeCount = articleService.getArticleTimeCount();
+        return ResUtils.success(articleTimeCount, "查询成功");
+    }
 
 }

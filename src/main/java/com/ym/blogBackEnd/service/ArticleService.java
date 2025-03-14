@@ -11,7 +11,9 @@ import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
 import com.ym.blogBackEnd.model.vo.article.ArticleVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 54621
@@ -41,15 +43,17 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 管理员编辑文章
+     *
      * @param adminEditArticleDto 管理员编辑文章请求类
-     * @param request            请求
+     * @param request             请求
      * @return 文章id
      */
-    Long adminEditArticle(AdminEditArticleDto adminEditArticleDto,HttpServletRequest request);
+    Long adminEditArticle(AdminEditArticleDto adminEditArticleDto, HttpServletRequest request);
 
 
     /**
      * 管理员 根据 id 获取编辑文章
+     *
      * @param id 文章 id
      * @return 文章
      */
@@ -58,6 +62,7 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 根据文章id获取文章
+     *
      * @param id 文章id
      * @return 文章
      */
@@ -66,13 +71,12 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 根据文章id和密码获取文章
-     * @param id 文章 id
+     *
+     * @param id       文章 id
      * @param password 加密 密码
      * @return 文章
      */
     ArticleVo getByArticleIdAndPassword(Long id, String password);
-
-
 
 
     /**
@@ -86,11 +90,11 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 普通用户 查询 文章 列表
+     *
      * @param adminPageArticleDto 管理员分页查询文章请求类
      * @return 文章分页
      */
     Page<ArticlePageVo> pageArticle(AdminPageArticleDto adminPageArticleDto);
-
 
 
     /**
@@ -111,7 +115,6 @@ public interface ArticleService extends IService<Article> {
     List<ArticlePageVo> articleListToPageVos(List<Article> articles);
 
 
-
     /**
      * 文章转 Vo
      *
@@ -130,8 +133,17 @@ public interface ArticleService extends IService<Article> {
     List<ArticleVo> articleListToVos(List<Article> articles);
 
 
+    /**
+     * 获取文章标签数量
+     *
+     * @return 标签数量
+     */
+    HashMap<String, Integer> getArticleTagsCount();
 
-
-
-
+    /**
+     * 获取 文章 时间 数量
+     *
+     * @return 时间数量
+     */
+    HashMap<String, Integer> getArticleTimeCount();
 }

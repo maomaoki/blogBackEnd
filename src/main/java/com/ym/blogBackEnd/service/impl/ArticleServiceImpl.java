@@ -26,9 +26,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -486,6 +485,60 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         return articles.stream().map(this::articleToVo).collect(Collectors.toList());
     }
 
+
+    /**
+     * 获取 文章 标签 统计 数量
+     * todo 这里可以优化 可以放进去缓存
+     *
+     * @return
+     */
+    @Override
+    // 重写父类方法，获取文章标签数量
+    public HashMap<String, Integer> getArticleTagsCount() {
+
+        // 获取文章标签数量
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.select("articleTags");
+        List<Article> articles = this.list(articleQueryWrapper);
+        List<List<String>> tagsList = articles.stream().map(
+                article -> article.getArticleTags() != null ?
+                        JSONUtil.toList(article.getArticleTags(), String.class) : new ArrayList<String>()
+        ).toList();
+        HashMap<String, Integer> articleTagsCount = new HashMap<>();
+
+        for (List<String> tags : tagsList) {
+            tags.forEach(tag -> {
+                articleTagsCount.put(tag, articleTagsCount.getOrDefault(tag, 0) + 1);
+            });
+        }
+        return articleTagsCount;
+    }
+
+
+    /**
+     * 获取 文章 时间 数量
+     *
+     * @return 时间数量
+     */
+    @Override
+    public HashMap<String, Integer> getArticleTimeCount() {
+
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.select("createTime");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        List<String> articleCreateTimeList = this.baseMapper.selectList(articleQueryWrapper).stream()
+                .map(article -> sdf.format(article.getCreateTime())).toList();
+
+        HashMap<String, Integer> articleCreateTimeMap = new HashMap<>();
+        articleCreateTimeList.forEach(
+                createTime -> articleCreateTimeMap.put(
+                        createTime,
+                        articleCreateTimeMap.getOrDefault(createTime, 0) + 1
+                )
+        );
+
+        return articleCreateTimeMap;
+    }
 }
 
 
