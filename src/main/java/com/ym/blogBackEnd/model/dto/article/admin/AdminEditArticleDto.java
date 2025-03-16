@@ -56,6 +56,12 @@ public class AdminEditArticleDto implements Serializable {
 
 
     /**
+     * 文章 字数
+     */
+    private Integer articleSize;
+
+
+    /**
      * 文章是否加密 0不加密(默认),1加密
      */
     private Integer isEncrypt;

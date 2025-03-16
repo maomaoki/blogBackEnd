@@ -70,6 +70,11 @@ public class AdminPageArticleDto extends PageRequest implements Serializable {
 
 
     /**
+     * 文章 字数
+     */
+    private Integer articleSize;
+
+    /**
      * 创建 开始时间
      */
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")

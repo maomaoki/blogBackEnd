@@ -35,6 +35,11 @@ public class ArticlePageVo implements Serializable {
      */
     private String articleIntroduction;
 
+    /**
+     * 文章 字数
+     */
+    private Integer articleSize;
+
 
     /**
      * 文章标签 （JSON 数组）

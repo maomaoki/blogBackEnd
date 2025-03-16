@@ -1,6 +1,8 @@
 package com.ym.blogBackEnd.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.stream.CollectorUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -14,8 +16,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.*;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.mapper.ArticleMapper;
@@ -407,6 +408,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         String articleCategory = adminPageArticleDto.getArticleCategory();
         String articleAuthor = adminPageArticleDto.getArticleAuthor();
         Integer isRecommend = adminPageArticleDto.getIsRecommend();
+        Integer articleSize = adminPageArticleDto.getArticleSize();
         Integer isHot = adminPageArticleDto.getIsHot();
         Integer articleStatus = adminPageArticleDto.getArticleStatus();
         Date createStartTime = adminPageArticleDto.getCreateStartTime();
@@ -432,6 +434,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         userQueryWrapper.eq(StrUtil.isNotBlank(articleAuthor), "articleAuthor", articleAuthor);
         userQueryWrapper.eq(ObjUtil.isNotNull(isRecommend), "isRecommend", isRecommend);
         userQueryWrapper.eq(ObjUtil.isNotNull(isHot), "isHot", isHot);
+        userQueryWrapper.ge(ObjUtil.isNotNull(articleSize), "articleSize", articleSize);
         userQueryWrapper.eq(ObjUtil.isNotNull(articleStatus), "articleStatus", articleStatus);
 
 
@@ -494,7 +497,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      */
     @Override
     // 重写父类方法，获取文章标签数量
-    public HashMap<String, Integer> getArticleTagsCount() {
+    public List<ArticleTagsCountVo> getArticleTagsCount() {
 
         // 获取文章标签数量
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
@@ -511,7 +514,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 articleTagsCount.put(tag, articleTagsCount.getOrDefault(tag, 0) + 1);
             });
         }
-        return articleTagsCount;
+
+        List<ArticleTagsCountVo> articleTagsCountVoList = new ArrayList<>();
+        articleTagsCount.forEach((tag, count) -> {
+            articleTagsCountVoList.add(new ArticleTagsCountVo(tag, count));
+        });
+
+        return articleTagsCountVoList;
     }
 
 
@@ -521,7 +530,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      * @return 时间数量
      */
     @Override
-    public HashMap<String, Integer> getArticleTimeCount() {
+    public List<ArticleTimeCountVo> getArticleTimeCount() {
 
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.select("createTime");
@@ -529,15 +538,53 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         List<String> articleCreateTimeList = this.baseMapper.selectList(articleQueryWrapper).stream()
                 .map(article -> sdf.format(article.getCreateTime())).toList();
 
-        HashMap<String, Integer> articleCreateTimeMap = new HashMap<>();
+        HashMap<String, Long> articleCreateTimeMap = new HashMap<>();
         articleCreateTimeList.forEach(
                 createTime -> articleCreateTimeMap.put(
                         createTime,
-                        articleCreateTimeMap.getOrDefault(createTime, 0) + 1
+                        articleCreateTimeMap.getOrDefault(createTime, 0L) + 1
                 )
         );
 
-        return articleCreateTimeMap;
+
+        ArrayList<ArticleTimeCountVo> articleTimeCountVos = new ArrayList<>();
+        articleCreateTimeMap.forEach((createTime, count) -> {
+            articleTimeCountVos.add(new ArticleTimeCountVo(createTime, count));
+        });
+        return articleTimeCountVos;
+    }
+
+    /**
+     * 获取 文章 统计 信息(只有发布的)
+     *
+     * @return
+     */
+    @Override
+    public ArticleInfoCountVo getArticleInfoCount() {
+
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
+        long count = this.baseMapper.selectCount(articleQueryWrapper);
+
+        articleQueryWrapper.select("sum(articleSize)");
+        List<Object> objects = this.baseMapper.selectObjs(articleQueryWrapper);
+        ThrowUtils.ifThrow(
+                CollUtil.isEmpty(objects),
+                ErrorEnums.OP_ERROR,
+                "统计文章信息出错"
+        );
+
+        System.out.println(objects.get(0));
+
+        int articleWordSize = Integer.parseInt(objects.get(0) + "");
+
+        ArticleInfoCountVo articleInfoCountVo = new ArticleInfoCountVo();
+        articleInfoCountVo.setArticleWordCount(
+                (articleWordSize >= 1000) ? articleWordSize / 1000.0 + "k" : "0." + articleWordSize + "k");
+
+        articleInfoCountVo.setArticleCount(count);
+
+        return articleInfoCountVo;
     }
 }
 

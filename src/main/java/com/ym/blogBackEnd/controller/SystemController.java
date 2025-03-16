@@ -27,8 +27,6 @@ public class SystemController {
     @Resource
     private SystemService systemService;
 
-
-
     @GetMapping("/info")
     public Result<SystemInfoVo> getSystemInfo() {
         SystemInfoVo systemInfo = systemService.getSystemInfo();
@@ -41,5 +39,7 @@ public class SystemController {
         return ResUtils.success(bannerInfoVo,"查询成功");
 
     }
+
+
 
 }

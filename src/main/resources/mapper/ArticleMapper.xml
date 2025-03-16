@@ -10,6 +10,7 @@
             <result property="articleTitle" column="articleTitle" />
             <result property="articleIntroduction" column="articleIntroduction" />
             <result property="articleContent" column="articleContent" />
+            <result property="articleSize" column="articleSize" />
             <result property="articleTags" column="articleTags" />
             <result property="articleCategory" column="articleCategory" />
             <result property="articleLikeNumber" column="articleLikeNumber" />
@@ -29,7 +30,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,articleBgImage,articleTitle,articleIntroduction,articleContent,articleTags,
+        id,articleBgImage,articleTitle,articleIntroduction,articleContent,articleTags,articleSize,
         articleCategory,articleLikeNumber,articleCollectNumber,articleLookNumber,articleCommentNumber,
         articleAuthor,isEncrypt,encryptPassword,isRecommend,isHot,articleStatus,
         createTime,editTime,updateTime,isDelete

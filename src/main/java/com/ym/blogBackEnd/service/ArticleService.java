@@ -7,8 +7,8 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.*;
+import io.swagger.models.auth.In;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -138,12 +138,20 @@ public interface ArticleService extends IService<Article> {
      *
      * @return 标签数量
      */
-    HashMap<String, Integer> getArticleTagsCount();
+    List<ArticleTagsCountVo> getArticleTagsCount();
 
     /**
      * 获取 文章 时间 数量
      *
      * @return 时间数量
      */
-    HashMap<String, Integer> getArticleTimeCount();
+    List<ArticleTimeCountVo> getArticleTimeCount();
+
+
+    /**
+     * 获取 文章 统计 信息(只有发布的)
+     *
+     * @return
+     */
+    ArticleInfoCountVo getArticleInfoCount();
 }

@@ -10,8 +10,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
-import com.ym.blogBackEnd.model.vo.article.ArticlePageVo;
-import com.ym.blogBackEnd.model.vo.article.ArticleVo;
+import com.ym.blogBackEnd.model.vo.article.*;
 import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import org.springframework.web.bind.annotation.*;
@@ -104,15 +103,23 @@ public class ArticleController {
 
 
     @GetMapping("/articleTagsCount")
-    public Result<HashMap<String, Integer>> getArticleTagsCount() {
-        HashMap<String, Integer> articleTagsCount = articleService.getArticleTagsCount();
+    public Result<List<ArticleTagsCountVo>> getArticleTagsCount() {
+        List<ArticleTagsCountVo> articleTagsCount = articleService.getArticleTagsCount();
         return ResUtils.success(articleTagsCount, "查询成功");
     }
 
-    @GetMapping("articleTimeCount")
-    public Result<HashMap<String, Integer>> getArticleTimeCount() {
-        HashMap<String, Integer> articleTimeCount = articleService.getArticleTimeCount();
-        return ResUtils.success(articleTimeCount, "查询成功");
+
+    @GetMapping("/articleTimeCount")
+    public Result<List<ArticleTimeCountVo>> getArticleTimeCount() {
+        List<ArticleTimeCountVo> articleTimeCountVos = articleService.getArticleTimeCount();
+        return ResUtils.success(articleTimeCountVos, "查询成功");
     }
+
+    @GetMapping("/articleInfoCount")
+    public Result<ArticleInfoCountVo> getArticleInfoCount() {
+        ArticleInfoCountVo articleInfoCount = articleService.getArticleInfoCount();
+        return ResUtils.success(articleInfoCount, "查询成功");
+    }
+
 
 }

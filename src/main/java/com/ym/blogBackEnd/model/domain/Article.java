@@ -42,6 +42,11 @@ public class Article implements Serializable {
     private String articleContent;
 
     /**
+     * 文章 字数
+     */
+    private Integer articleSize;
+
+    /**
      * 文章标签 （JSON 数组）
      */
     private String articleTags;

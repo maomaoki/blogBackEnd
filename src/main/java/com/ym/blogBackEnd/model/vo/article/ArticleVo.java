@@ -54,6 +54,11 @@ public class ArticleVo implements Serializable {
     private String articleCategory;
 
     /**
+     * 文章 字数
+     */
+    private Integer articleSize;
+
+    /**
      * 文章点赞数
      */
     private Integer articleLikeNumber;
