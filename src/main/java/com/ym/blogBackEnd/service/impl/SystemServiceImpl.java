@@ -11,6 +11,7 @@ import com.ym.blogBackEnd.service.ArticleService;
 import com.ym.blogBackEnd.service.PictureService;
 import com.ym.blogBackEnd.service.SystemService;
 import com.ym.blogBackEnd.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,6 +23,7 @@ import java.util.List;
  * @description 系统 方面的 service
  * @createDate 2025-02-03 11:42:17
  */
+@Slf4j
 @Service
 public class SystemServiceImpl implements SystemService {
 
@@ -81,9 +83,11 @@ public class SystemServiceImpl implements SystemService {
         pictureQueryWrapper.eq("pictureCategory", PictureConstant.PICTURE_CATEGORY_BANNER);
         Picture picture = pictureService.getOne(pictureQueryWrapper);
         if (picture == null) {
-            throw new BusinessException(ErrorEnums.NOT_FOUND_ERROR, "没有封面照片");
+            log.error("没有封面照片");
+            bannerInfoVo.setBannerImageUrl("");
+        }else {
+            bannerInfoVo.setBannerImageUrl(picture.getPictureUrl());
         }
-        bannerInfoVo.setBannerImageUrl(picture.getPictureUrl());
 
         // todo 到时 提取 title 出来
         bannerInfoVo.setBannerTitle("云猫•博客");

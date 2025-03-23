@@ -1,8 +1,10 @@
 package com.ym.blogBackEnd.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ym.blogBackEnd.common.response.Result;
+import com.ym.blogBackEnd.model.domain.BlogSystem;
 import com.ym.blogBackEnd.model.vo.system.BannerInfoVo;
-import com.ym.blogBackEnd.model.vo.system.SystemInfoVo;
+import com.ym.blogBackEnd.service.BlogSystemService;
 import com.ym.blogBackEnd.service.SystemService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,18 +22,25 @@ import javax.annotation.Resource;
  * @description: 系统接口
  */
 @RestController
-@RequestMapping("/system")
+@RequestMapping("/blogSystem")
 @Slf4j
-public class SystemController {
+public class BlogSystemController {
 
     @Resource
     private SystemService systemService;
 
-    @GetMapping("/info")
-    public Result<SystemInfoVo> getSystemInfo() {
-        SystemInfoVo systemInfo = systemService.getSystemInfo();
-        return ResUtils.success(systemInfo, "查询成功");
+
+    @Resource
+    private BlogSystemService blogSystemService;
+
+    @GetMapping("/getBlogSystemInfo")
+    public Result<BlogSystem> getBlogSystemInfo() {
+        QueryWrapper<BlogSystem> blogSystemQueryWrapper = new QueryWrapper<>();
+        BlogSystem blogSystem = blogSystemService.getOne(blogSystemQueryWrapper);
+        return ResUtils.success(blogSystem, "查询成功");
     }
+
+
 
     @GetMapping("/bannerInfo")
     public Result<BannerInfoVo> getBannerInfo() {

@@ -1,0 +1,28 @@
+CREATE TABLE blogSystem
+(
+    id                        INT PRIMARY KEY AUTO_INCREMENT COMMENT '主键id，唯一标识每条记录',
+    homeBannerBgImageUrl      VARCHAR(255) COMMENT 'home banner 背景图的URL地址',
+    homeBannerPrintText       JSON COMMENT 'home banner 打印文字，以JSON列表格式存储',
+    homeBannerTitle           VARCHAR(255) COMMENT 'home banner 的标题',
+    businessCardTop           VARCHAR(255) COMMENT '名片顶部展示的文字',
+    businessCardText          JSON COMMENT '名片展示文字，以JSON列表格式存储，html文档 支持<b></b>标签高亮',
+    businessCardTitle         VARCHAR(255) COMMENT '名片的标题',
+    businessCardName          VARCHAR(255) COMMENT '名片的名称',
+    businessCardBiliUrl       VARCHAR(255) COMMENT '名片关联的B站分享地址',
+    businessCardGitHubUrl     VARCHAR(255) COMMENT '名片关联的GitHub分享地址',
+    shareBiliUrl              VARCHAR(255) COMMENT 'B站分享地址',
+    shareGitHubUrl            VARCHAR(255) COMMENT 'GitHub分享地址',
+    shareGiteeUrl             VARCHAR(255) COMMENT 'Gitee分享地址',
+    shareEmailUrl             VARCHAR(255) COMMENT 'Email分享地址',
+    shareQQUrl                VARCHAR(255) COMMENT 'QQ分享地址',
+    shareWxUrl                VARCHAR(255) COMMENT '微信分享地址',
+    shareDyUrl                VARCHAR(255) COMMENT '抖音分享地址',
+    blogSystemUserName        VARCHAR(255) COMMENT '博客系统管理员的名称',
+    blogCreateTime            DATETIME COMMENT '博客的创建时间',
+    blogRegistrationNumber    VARCHAR(255) COMMENT '博客的备案号',
+    blogRegistrationNumberUrl VARCHAR(255) COMMENT '博客备案号地址',
+    createTime                datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    editTime                  datetime default CURRENT_TIMESTAMP not null comment '编辑时间',
+    updateTime                datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    isDelete                  tinyint  default 0                 not null comment '是否删除'
+) comment '博客系统表' collate = utf8mb4_unicode_ci;
