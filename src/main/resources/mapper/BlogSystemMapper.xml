@@ -9,6 +9,7 @@
             <result property="homeBannerBgImageUrl" column="homeBannerBgImageUrl" />
             <result property="homeBannerPrintText" column="homeBannerPrintText" />
             <result property="homeBannerTitle" column="homeBannerTitle" />
+            <result property="businessCardAvatarUrl" column="businessCardAvatarUrl" />
             <result property="businessCardTop" column="businessCardTop" />
             <result property="businessCardText" column="businessCardText" />
             <result property="businessCardTitle" column="businessCardTitle" />
@@ -33,7 +34,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,businessCardTop,businessCardText,
+        id,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,businessCardAvatarUrl,businessCardTop,businessCardText,
         businessCardTitle,businessCardName,businessCardBiliUrl,businessCardGitHubUrl,shareBiliUrl,
         shareGitHubUrl,shareGiteeUrl,shareEmailUrl,shareQQUrl,shareWxUrl,
         shareDyUrl,blogSystemUserName,blogCreateTime,blogRegistrationNumber,blogRegistrationNumberUrl,

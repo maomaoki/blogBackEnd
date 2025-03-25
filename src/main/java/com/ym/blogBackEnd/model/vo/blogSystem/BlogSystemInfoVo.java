@@ -1,22 +1,21 @@
-package com.ym.blogBackEnd.model.domain;
+package com.ym.blogBackEnd.model.vo.blogSystem;
 
-import com.baomidou.mybatisplus.annotation.*;
-
-import java.io.Serializable;
-import java.util.Date;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
- * 博客系统表
- * @TableName blog_system
+ * 博客 系统 返回 信息 vo
  */
-@TableName(value ="blog_system")
 @Data
-public class BlogSystem implements Serializable {
+public class BlogSystemInfoVo {
     /**
      * 主键id，唯一标识每条记录
      */
-    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -124,27 +123,4 @@ public class BlogSystem implements Serializable {
      */
     private String blogRegistrationNumberUrl;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 编辑时间
-     */
-    private Date editTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    @TableLogic
-    private Integer isDelete;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }

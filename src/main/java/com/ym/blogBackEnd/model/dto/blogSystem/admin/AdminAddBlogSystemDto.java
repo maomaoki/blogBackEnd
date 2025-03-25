@@ -1,23 +1,16 @@
-package com.ym.blogBackEnd.model.domain;
+package com.ym.blogBackEnd.model.dto.blogSystem.admin;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
- * 博客系统表
- * @TableName blog_system
+ * 管理员添加 博客信息 请求 dto
  */
-@TableName(value ="blog_system")
 @Data
-public class BlogSystem implements Serializable {
-    /**
-     * 主键id，唯一标识每条记录
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Long id;
+public class AdminAddBlogSystemDto implements Serializable {
 
     /**
      * home banner 背景图的URL地址
@@ -124,27 +117,4 @@ public class BlogSystem implements Serializable {
      */
     private String blogRegistrationNumberUrl;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 编辑时间
-     */
-    private Date editTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
-    /**
-     * 是否删除
-     */
-    @TableLogic
-    private Integer isDelete;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
 }
