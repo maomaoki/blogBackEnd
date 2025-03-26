@@ -4,13 +4,15 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.Data;
 
 /**
  * 博客系统表
+ *
  * @TableName blog_system
  */
-@TableName(value ="blog_system")
+@TableName(value = "blog_system")
 @Data
 public class BlogSystem implements Serializable {
     /**
@@ -33,6 +35,26 @@ public class BlogSystem implements Serializable {
      * home banner 的标题
      */
     private String homeBannerTitle;
+
+    /**
+     * 更多 背景图
+     */
+    private String moreImageUrl;
+
+    /**
+     * 更多 标题
+     */
+    private String moreTitle;
+
+    /**
+     * 更多 内容
+     */
+    private String moreContent;
+
+    /**
+     * 登录 背景图
+     */
+    private String loginImageUrl;
 
     /**
      * 名片 头像

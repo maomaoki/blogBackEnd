@@ -28,6 +28,26 @@ public class AdminAddBlogSystemDto implements Serializable {
     private String homeBannerTitle;
 
     /**
+     *  更多 背景图
+     */
+    private String moreImageUrl;
+
+    /**
+     * 更多 标题
+     */
+    private String moreTitle;
+
+    /**
+     * 更多 内容
+     */
+    private String moreContent;
+
+    /**
+     *  登录 背景图
+     */
+    private String loginImageUrl;
+
+    /**
      * 名片 头像
      */
     private String businessCardAvatarUrl;

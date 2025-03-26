@@ -7,6 +7,7 @@ create table article
     articleTitle         varchar(128)                       null comment '文章标题',
     articleIntroduction  varchar(128)                       null comment '文章主题(简介)',
     articleContent       text                               null comment '文章内容',
+    articleSize          bigint                             null comment '文章字数',
     articleTags          varchar(512)                       null comment '文章标签 （JSON 数组）',
     articleCategory      varchar(64)                        null comment '文章分类',
     articleLikeNumber    int      default 0                 null comment '文章点赞数',

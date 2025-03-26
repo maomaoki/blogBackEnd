@@ -1,9 +1,15 @@
+-- auto-generated definition
 create table blog_system
 (
-    id                  bigint auto_increment comment '主键id' primary key,
+    id                        bigint auto_increment comment '主键id'
+        primary key,
     homeBannerBgImageUrl      varchar(255)                       null comment 'home banner 背景图的URL地址',
     homeBannerPrintText       varchar(128)                       null comment 'home banner 打印文字，以JSON列表格式存储',
     homeBannerTitle           varchar(255)                       null comment 'home banner 的标题',
+    moreImageUrl              varchar(255)                       null comment '更多背景图片url',
+    moreTitle                 varchar(64)                        null comment '更多de标题',
+    moreContent               varchar(64)                        null comment '更多de内容',
+    loginImageUrl             varchar(255)                       null comment '登录页面背景图',
     businessCardAvatarUrl     varchar(255)                       null comment '名片头像地址',
     businessCardTop           varchar(255)                       null comment '名片顶部展示的文字',
     businessCardText          varchar(128)                       null comment '名片展示文字，以JSON列表格式存储，html文档 支持<b></b>标签高亮',
@@ -28,3 +34,4 @@ create table blog_system
     isDelete                  tinyint  default 0                 not null comment '是否删除'
 )
     comment '博客系统表' collate = utf8mb4_unicode_ci;
+

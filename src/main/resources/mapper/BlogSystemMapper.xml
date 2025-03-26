@@ -5,36 +5,41 @@
 <mapper namespace="com.ym.blogBackEnd.mapper.BlogSystemMapper">
 
     <resultMap id="BaseResultMap" type="com.ym.blogBackEnd.model.domain.BlogSystem">
-            <id property="id" column="id" />
-            <result property="homeBannerBgImageUrl" column="homeBannerBgImageUrl" />
-            <result property="homeBannerPrintText" column="homeBannerPrintText" />
-            <result property="homeBannerTitle" column="homeBannerTitle" />
-            <result property="businessCardAvatarUrl" column="businessCardAvatarUrl" />
-            <result property="businessCardTop" column="businessCardTop" />
-            <result property="businessCardText" column="businessCardText" />
-            <result property="businessCardTitle" column="businessCardTitle" />
-            <result property="businessCardName" column="businessCardName" />
-            <result property="businessCardBiliUrl" column="businessCardBiliUrl" />
-            <result property="businessCardGitHubUrl" column="businessCardGitHubUrl" />
-            <result property="shareBiliUrl" column="shareBiliUrl" />
-            <result property="shareGitHubUrl" column="shareGitHubUrl" />
-            <result property="shareGiteeUrl" column="shareGiteeUrl" />
-            <result property="shareEmailUrl" column="shareEmailUrl" />
-            <result property="shareQQUrl" column="shareQQUrl" />
-            <result property="shareWxUrl" column="shareWxUrl" />
-            <result property="shareDyUrl" column="shareDyUrl" />
-            <result property="blogSystemUserName" column="blogSystemUserName" />
-            <result property="blogCreateTime" column="blogCreateTime" />
-            <result property="blogRegistrationNumber" column="blogRegistrationNumber" />
-            <result property="blogRegistrationNumberUrl" column="blogRegistrationNumberUrl" />
-            <result property="createTime" column="createTime" />
-            <result property="editTime" column="editTime" />
-            <result property="updateTime" column="updateTime" />
-            <result property="isDelete" column="isDelete" />
+        <id property="id" column="id"/>
+        <result property="homeBannerBgImageUrl" column="homeBannerBgImageUrl"/>
+        <result property="homeBannerPrintText" column="homeBannerPrintText"/>
+        <result property="homeBannerTitle" column="homeBannerTitle"/>
+        <result property="moreImageUrl" column="moreImageUrl"/>
+        <result property="moreTitle" column="moreTitle"/>
+        <result property="moreContent" column="moreContent"/>
+        <result property="loginImageUrl" column="loginImageUrl"/>
+        <result property="businessCardAvatarUrl" column="businessCardAvatarUrl"/>
+        <result property="businessCardTop" column="businessCardTop"/>
+        <result property="businessCardText" column="businessCardText"/>
+        <result property="businessCardTitle" column="businessCardTitle"/>
+        <result property="businessCardName" column="businessCardName"/>
+        <result property="businessCardBiliUrl" column="businessCardBiliUrl"/>
+        <result property="businessCardGitHubUrl" column="businessCardGitHubUrl"/>
+        <result property="shareBiliUrl" column="shareBiliUrl"/>
+        <result property="shareGitHubUrl" column="shareGitHubUrl"/>
+        <result property="shareGiteeUrl" column="shareGiteeUrl"/>
+        <result property="shareEmailUrl" column="shareEmailUrl"/>
+        <result property="shareQQUrl" column="shareQQUrl"/>
+        <result property="shareWxUrl" column="shareWxUrl"/>
+        <result property="shareDyUrl" column="shareDyUrl"/>
+        <result property="blogSystemUserName" column="blogSystemUserName"/>
+        <result property="blogCreateTime" column="blogCreateTime"/>
+        <result property="blogRegistrationNumber" column="blogRegistrationNumber"/>
+        <result property="blogRegistrationNumberUrl" column="blogRegistrationNumberUrl"/>
+        <result property="createTime" column="createTime"/>
+        <result property="editTime" column="editTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="isDelete" column="isDelete"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,businessCardAvatarUrl,businessCardTop,businessCardText,
+        id
+        ,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,moreImageUrl,loginImageUrl,businessCardAvatarUrl,businessCardTop,businessCardText,
         businessCardTitle,businessCardName,businessCardBiliUrl,businessCardGitHubUrl,shareBiliUrl,
         shareGitHubUrl,shareGiteeUrl,shareEmailUrl,shareQQUrl,shareWxUrl,
         shareDyUrl,blogSystemUserName,blogCreateTime,blogRegistrationNumber,blogRegistrationNumberUrl,
