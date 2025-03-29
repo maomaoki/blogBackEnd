@@ -32,6 +32,15 @@ public class BlogSystemInfoVo {
      * home banner 的标题
      */
     private String homeBannerTitle;
+    /**
+     * 随便看看 幻灯片 文字内容
+     */
+    private String slideWrapTitle;
+
+    /**
+     * 随便看看 幻灯片 url(其实也是我的网址)
+     */
+    private String slideWrapUrl;
 
     /**
      *  更多 背景图

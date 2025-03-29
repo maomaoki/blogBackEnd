@@ -154,4 +154,11 @@ public interface ArticleService extends IService<Article> {
      * @return
      */
     ArticleInfoCountVo getArticleInfoCount();
+
+
+    /**
+     * 统计 文章 分类 信息(只有发布的)
+     * @return
+     */
+    List<ArticleTagsCountVo> getArticleCategoryList();
 }

@@ -96,8 +96,8 @@ public class ArticleController {
 
 
     @GetMapping("/articleCategoryList")
-    public Result<List<String>> getArticleCategoryList() {
-        List<String> articleCategoryList = List.of("前端开发", "后端开发", "测试", "学习", "日常", "无聊", "其他");
+    public Result<List<ArticleTagsCountVo>> getArticleCategoryList() {
+        List<ArticleTagsCountVo> articleCategoryList = articleService.getArticleCategoryList();
         return ResUtils.success(articleCategoryList, "查询成功");
     }
 
@@ -120,6 +120,5 @@ public class ArticleController {
         ArticleInfoCountVo articleInfoCount = articleService.getArticleInfoCount();
         return ResUtils.success(articleInfoCount, "查询成功");
     }
-
 
 }

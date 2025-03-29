@@ -29,10 +29,8 @@ public interface ArticleConstant {
      */
     Integer ARTICLE_STATUS_NOT_PUBLISH = 1;
 
-
     /**
      * 文章状态 - 发布
      */
     Integer ARTICLE_STATUS_PUBLISH = 2;
-
 }

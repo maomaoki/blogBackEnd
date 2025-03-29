@@ -2,7 +2,6 @@ package com.ym.blogBackEnd.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.stream.CollectorUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -502,6 +501,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         // 获取文章标签数量
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.select("articleTags");
+        articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
         List<Article> articles = this.list(articleQueryWrapper);
         List<List<String>> tagsList = articles.stream().map(
                 article -> article.getArticleTags() != null ?
@@ -533,6 +533,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     public List<ArticleTimeCountVo> getArticleTimeCount() {
 
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
         articleQueryWrapper.select("createTime");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         List<String> articleCreateTimeList = this.baseMapper.selectList(articleQueryWrapper).stream()
@@ -580,11 +581,40 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
         ArticleInfoCountVo articleInfoCountVo = new ArticleInfoCountVo();
         articleInfoCountVo.setArticleWordCount(
-                (articleWordSize >= 1000) ? articleWordSize / 1000.0 + "k" : "0." + articleWordSize + "k");
+                (articleWordSize >= 1000) ? articleWordSize / 1000.0 + "k" : articleWordSize + "");
 
         articleInfoCountVo.setArticleCount(count);
 
         return articleInfoCountVo;
+    }
+
+
+    /**
+     * 获取 文章 统计 分类 信息(只有发布的)
+     *
+     * @return
+     */
+    @Override
+    public List<ArticleTagsCountVo> getArticleCategoryList() {
+//        List.of("前端开发", "后端开发", "测试", "学习", "日常", "无聊", "其他");
+        // 获取文章标签数量
+        QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
+        articleQueryWrapper.select("articleCategory");
+        articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
+        List<Article> articles = this.list(articleQueryWrapper);
+        HashMap<String, Integer> articleCategorysCount = new HashMap<>();
+        for (Article article : articles) {
+            if (StrUtil.isNotBlank(article.getArticleCategory()) ){
+                articleCategorysCount.put(article.getArticleCategory(), articleCategorysCount.getOrDefault(article.getArticleCategory(), 0) + 1);
+            }
+        }
+
+        List<ArticleTagsCountVo> articleCategorysCountVoList = new ArrayList<>();
+        articleCategorysCount.forEach((category, count) -> {
+            articleCategorysCountVoList.add(new ArticleTagsCountVo(category, count));
+        });
+
+        return articleCategorysCountVoList;
     }
 }
 

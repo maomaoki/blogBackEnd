@@ -9,6 +9,8 @@
         <result property="homeBannerBgImageUrl" column="homeBannerBgImageUrl"/>
         <result property="homeBannerPrintText" column="homeBannerPrintText"/>
         <result property="homeBannerTitle" column="homeBannerTitle"/>
+        <result property="slideWrapTitle" column="slideWrapTitle"/>
+        <result property="slideWrapUrl" column="slideWrapUrl"/>
         <result property="moreImageUrl" column="moreImageUrl"/>
         <result property="moreTitle" column="moreTitle"/>
         <result property="moreContent" column="moreContent"/>
