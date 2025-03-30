@@ -1,8 +1,9 @@
 package com.ym.blogBackEnd;
 
-import com.ym.blogBackEnd.html.TestHtml;
-import com.ym.blogBackEnd.utils.EmailUtils;
-import com.ym.blogBackEnd.utils.RedisUtils;
+import cn.hutool.core.collection.CollUtil;
+import com.ym.blogBackEnd.api.client.NewsApi;
+import com.ym.blogBackEnd.api.model.news.dto.NewsDto;
+import com.ym.blogBackEnd.api.model.news.vo.NewsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +16,12 @@ import java.util.List;
 @SpringBootTest
 class BlogBackEndApplicationTests {
 
+    @Resource
+    private NewsApi newsApi;
 
     @Test
-    void contextLoads() throws IOException {
+    void contextLoads(){
+
 
     }
 
