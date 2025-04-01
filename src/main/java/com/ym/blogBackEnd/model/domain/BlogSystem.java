@@ -36,6 +36,22 @@ public class BlogSystem implements Serializable {
      */
     private String homeBannerTitle;
 
+
+    /**
+     * 新闻 banner 背景 图片 url
+     */
+    private String newsBannerBgImageUrl;
+
+    /**
+     * 新闻 banner 背景 title
+     */
+    private String newsBannerTitle;
+
+    /**
+     * 新闻 banner 打印文字
+     */
+    private String newsBannerPrintText;
+
     /**
      * 随便看看 幻灯片 文字内容
      */

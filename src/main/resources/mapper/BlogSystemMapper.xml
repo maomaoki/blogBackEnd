@@ -9,6 +9,9 @@
         <result property="homeBannerBgImageUrl" column="homeBannerBgImageUrl"/>
         <result property="homeBannerPrintText" column="homeBannerPrintText"/>
         <result property="homeBannerTitle" column="homeBannerTitle"/>
+        <result property="newsBannerBgImageUrl" column="newsBannerBgImageUrl"/>
+        <result property="newsBannerTitle" column="newsBannerTitle"/>
+        <result property="newsBannerPrintText" column="newsBannerPrintText"/>
         <result property="slideWrapTitle" column="slideWrapTitle"/>
         <result property="slideWrapUrl" column="slideWrapUrl"/>
         <result property="moreImageUrl" column="moreImageUrl"/>
@@ -41,7 +44,9 @@
 
     <sql id="Base_Column_List">
         id
-        ,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,moreImageUrl,loginImageUrl,businessCardAvatarUrl,businessCardTop,businessCardText,
+        ,homeBannerBgImageUrl,homeBannerPrintText,homeBannerTitle,
+        newsBannerBgImageUrl,newsBannerTitle,newsBannerPrintText,
+        moreImageUrl,loginImageUrl,businessCardAvatarUrl,businessCardTop,businessCardText,
         businessCardTitle,businessCardName,businessCardBiliUrl,businessCardGitHubUrl,shareBiliUrl,
         shareGitHubUrl,shareGiteeUrl,shareEmailUrl,shareQQUrl,shareWxUrl,
         shareDyUrl,blogSystemUserName,blogCreateTime,blogRegistrationNumber,blogRegistrationNumberUrl,
