@@ -502,6 +502,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.select("articleTags");
         articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
+
         List<Article> articles = this.list(articleQueryWrapper);
         List<List<String>> tagsList = articles.stream().map(
                 article -> article.getArticleTags() != null ?
@@ -535,11 +536,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         QueryWrapper<Article> articleQueryWrapper = new QueryWrapper<>();
         articleQueryWrapper.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
         articleQueryWrapper.select("createTime");
+        articleQueryWrapper.orderBy(true, false, "createTime");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
         List<String> articleCreateTimeList = this.baseMapper.selectList(articleQueryWrapper).stream()
                 .map(article -> sdf.format(article.getCreateTime())).toList();
 
-        HashMap<String, Long> articleCreateTimeMap = new HashMap<>();
+        LinkedHashMap<String, Long> articleCreateTimeMap = new LinkedHashMap<>();
         articleCreateTimeList.forEach(
                 createTime -> articleCreateTimeMap.put(
                         createTime,
@@ -575,7 +577,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 "统计文章信息出错"
         );
 
-        System.out.println(objects.get(0));
 
         int articleWordSize = Integer.parseInt(objects.get(0) + "");
 
@@ -604,7 +605,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         List<Article> articles = this.list(articleQueryWrapper);
         HashMap<String, Integer> articleCategorysCount = new HashMap<>();
         for (Article article : articles) {
-            if (StrUtil.isNotBlank(article.getArticleCategory()) ){
+            if (StrUtil.isNotBlank(article.getArticleCategory())) {
                 articleCategorysCount.put(article.getArticleCategory(), articleCategorysCount.getOrDefault(article.getArticleCategory(), 0) + 1);
             }
         }
