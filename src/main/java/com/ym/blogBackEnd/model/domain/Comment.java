@@ -35,27 +35,12 @@ public class Comment implements Serializable {
     private Long userId;
 
     /**
-     * 回复人的id(回复某个人的评论)
-     */
-    private Long replyUserId;
-
-    /**
-     * 祖先评论id(最高层id-用于快速删除,可能没有用)
-     */
-    private Long forebearId;
-
-    /**
-     * 父级评论Id(一般只有回复评论才会有)
-     */
-    private Long fatherId;
-
-    /**
      * 是否热门评论 0未热门 1热门
      */
     private Integer isHot;
 
     /**
-     * 是否置顶评论(最高层有最高层的,次级有次级,需要配合fatherId使用) 0未置顶 1置顶
+     * 是否置顶评论 0未置顶 1置顶
      */
     private Integer isSticky;
 
@@ -63,6 +48,31 @@ public class Comment implements Serializable {
      * 是否展示 0未展示 1展示
      */
     private Integer isShow;
+
+    /**
+     * 点赞数
+     */
+    private Integer likeNumber;
+
+    /**
+     * 回复数
+     */
+    private Integer replyNumber;
+
+    /**
+     * 评论定位地址
+     */
+    private String commentPositionAddress;
+
+    /**
+     * 评论的设备
+     */
+    private String commentDevice;
+
+    /**
+     * 评论的浏览器设备
+     */
+    private String commentBrowserDevice;
 
     /**
      * 审核人 id

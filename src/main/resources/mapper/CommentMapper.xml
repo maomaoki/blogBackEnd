@@ -9,12 +9,14 @@
             <result property="articleId" column="articleId" />
             <result property="content" column="content" />
             <result property="userId" column="userId" />
-            <result property="replyUserId" column="replyUserId" />
-            <result property="forebearId" column="forebearId" />
-            <result property="fatherId" column="fatherId" />
             <result property="isHot" column="isHot" />
             <result property="isSticky" column="isSticky" />
             <result property="isShow" column="isShow" />
+            <result property="likeNumber" column="likeNumber" />
+            <result property="replyNumber" column="replyNumber" />
+            <result property="commentPositionAddress" column="commentPositionAddress" />
+            <result property="commentDevice" column="commentDevice" />
+            <result property="commentBrowserDevice" column="commentBrowserDevice" />
             <result property="reviewUserId" column="reviewUserId" />
             <result property="reviewStatus" column="reviewStatus" />
             <result property="reviewReason" column="reviewReason" />
@@ -26,9 +28,9 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,articleId,content,userId,replyUserId,forebearId,
-        fatherId,isHot,isSticky,isShow,reviewUserId,
-        reviewStatus,reviewReason,reviewTime,editTime,createTime,
-        updateTime,isDelete
+        id,articleId,content,userId,isHot,isSticky,
+        isShow,likeNumber,replyNumber,commentPositionAddress,commentDevice,
+        commentBrowserDevice,reviewUserId,reviewStatus,reviewReason,reviewTime,
+        editTime,createTime,updateTime,isDelete
     </sql>
 </mapper>
