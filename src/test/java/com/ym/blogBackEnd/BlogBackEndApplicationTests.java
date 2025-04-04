@@ -19,14 +19,11 @@ import java.util.List;
 @SpringBootTest
 class BlogBackEndApplicationTests {
 
-    @Resource
-    private SensitiveWordBs sensitiveWordBs;
+
 
     @Test
     void contextLoads(){
 
-        String text = "五星红旗迎风飘扬，毛主席的画像屹立在天安门前,操,草,尼@!@$##玛,逼";
-        System.out.println(sensitiveWordBs.replace(text));
 
     }
 

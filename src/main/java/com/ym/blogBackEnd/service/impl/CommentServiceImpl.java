@@ -1,7 +1,10 @@
 package com.ym.blogBackEnd.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.houbb.sensitive.word.bs.SensitiveWordBs;
+import com.ym.blogBackEnd.constant.CommentConstant;
 import com.ym.blogBackEnd.enums.ErrorEnums;
 import com.ym.blogBackEnd.model.domain.Article;
 import com.ym.blogBackEnd.model.domain.Comment;
@@ -17,21 +20,25 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 /**
-* @author 54621
-* @description 针对表【comment(评论表)】的数据库操作Service实现
-* @createDate 2025-04-03 21:38:37
-*/
+ * @author 54621
+ * @description 针对表【comment(评论表)】的数据库操作Service实现
+ * @createDate 2025-04-03 21:38:37
+ */
 @Service
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
-    implements CommentService{
+        implements CommentService {
 
     @Resource
     private UserService userService;
 
     @Resource
     private ArticleService articleService;
+
+    @Resource
+    private SensitiveWordBs sensitiveWordBs;
 
     /**
      * 保存 评论
@@ -55,19 +62,33 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                 ErrorEnums.PARAMS_ERROR,
                 "评论内容不能为空"
         );
-        String comment = filterSensitiveCommentWords(saveDto.getContent());
+        saveDto.setContent(filterSensitiveCommentWords(saveDto.getContent()));
 
         // 4. 组装保存数据
+        Comment comment = new Comment();
+        BeanUtil.copyProperties(saveDto, comment);
+
+        // 默认数据补充
+        comment.setUserId(userVo.getId());
+        comment.setIsHot(CommentConstant.COMMENT_NOT_HOT);
+        comment.setIsSticky(CommentConstant.COMMENT_NOT_STICKY);
+        // 额外字段
+        comment.setIsShow(CommentConstant.COMMENT_IS_SHOW);
+
+        // 设备 定位 还没有做
+
+        // 审核 现在 默认 审核 通过
+        comment.setReviewStatus(CommentConstant.COMMENT_STATUS_PASS);
+        comment.setReviewReason("默认通过");
 
 
         // 5. 保存评论
-
-
-        return true;
+        return this.save(comment);
     }
 
     /**
      * 过滤 评论中 的 敏感词 替换成 **
+     *
      * @param content 旧评论
      * @return 过滤 后 的 评论
      */
@@ -78,9 +99,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
                 "评论内容不能为空"
         );
 
-        //
+        // todo 其实这里可以 异步处理 毕竟 还有一步 审核评论操作
 
-        return null;
+        return sensitiveWordBs.replace(content);
     }
 }
 
