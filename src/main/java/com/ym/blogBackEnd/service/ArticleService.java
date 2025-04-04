@@ -70,6 +70,11 @@ public interface ArticleService extends IService<Article> {
 
 
     /**
+     * 根据 文章id 获取 发布中的文章
+     */
+    Article getPublishArticleById(Long id);
+
+    /**
      * 根据文章id和密码获取文章
      *
      * @param id       文章 id

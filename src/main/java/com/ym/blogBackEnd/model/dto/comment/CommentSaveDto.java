@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,6 +20,7 @@ import java.util.Date;
 @Data
 public class CommentSaveDto implements Serializable {
 
+
     /**
      * 文章ID,用于关联文章
      */
@@ -30,22 +32,24 @@ public class CommentSaveDto implements Serializable {
     private String content;
 
 
-    /**
-     * 回复人的id(回复某个人的评论)
-     */
-    private Long replyUserId;
 
     /**
-     * 祖先评论id(最高层id-用于快速删除,可能没有用)
+     * 评论定位地址(可以前端定位 也可以后端定位)
      */
-    private Long forebearId;
+    private String commentPositionAddress;
 
     /**
-     * 父级评论Id(一般只有回复评论才会有)
+     * 评论的设备
      */
-    private Long fatherId;
+    private String commentDevice;
+
+    /**
+     * 评论的浏览器设备
+     */
+    private String commentBrowserDevice;
 
 
+    @Serial
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

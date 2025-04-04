@@ -280,16 +280,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
 
     }
 
-
     /**
-     * 管理员根据文章id获取文章
-     *
-     * @param id 文章id
-     * @return 文章
+     * 根据 文章id 获取 发布中的文章
      */
     @Override
-    public ArticleVo getByArticleId(Long id) {
-
+    public Article getPublishArticleById(Long id) {
         // 1. 校验参数
         ThrowUtils.ifThrow(
                 id == null,
@@ -309,6 +304,24 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 !article.getArticleStatus().equals(ArticleConstant.ARTICLE_STATUS_PUBLISH),
                 ErrorEnums.NOT_AUTH,
                 "文章未发布");
+
+
+
+        return article;
+    }
+
+
+    /**
+     * 管理员根据文章id获取文章
+     *
+     * @param id 文章id
+     * @return 文章
+     */
+    @Override
+    public ArticleVo getByArticleId(Long id) {
+
+        // 1. 校验 文章是否存在 并且 为 发布中状态
+        Article article = getPublishArticleById(id);
 
 
         // 4. 查看是否为加密,如果是加密只能返回简介，内容为空
@@ -332,18 +345,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
      */
     @Override
     public ArticleVo getByArticleIdAndPassword(Long id, String password) {
-        // 1.校验参数
-        ThrowUtils.ifThrow(
-                id == null || password == null,
-                ErrorEnums.PARAMS_ERROR,
-                "参数错误");
-
-        // 2.这里说明是请求加密文章,校验密码
-        Article article = this.getById(id);
-        ThrowUtils.ifThrow(
-                article == null,
-                ErrorEnums.NOT_FOUND_ERROR,
-                "文章不存在");
+        // 1. 校验 文章是否存在 并且 为 发布中状态
+        Article article = getPublishArticleById(id);
 
         String encryptPassword = article.getEncryptPassword();
         ThrowUtils.ifThrow(
