@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ym-blog
     username: root
-    password: yunmao
+    password: root
   session:
     store-type: redis
     timeout: 3600 # session 超时时间（秒）

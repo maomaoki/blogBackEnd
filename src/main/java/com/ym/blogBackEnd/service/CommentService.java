@@ -1,8 +1,11 @@
 package com.ym.blogBackEnd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ym.blogBackEnd.model.domain.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ym.blogBackEnd.model.dto.comment.CommentByArticlePageDto;
 import com.ym.blogBackEnd.model.dto.comment.CommentSaveDto;
+import com.ym.blogBackEnd.model.vo.comment.CommentVo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,4 +24,13 @@ public interface CommentService extends IService<Comment> {
      * @return 是否保存成功
      */
     Boolean saveComment(CommentSaveDto saveDto, HttpServletRequest request);
+
+
+    /**
+     * 根据 文章 id 分页 查询 评论列表
+     *
+     * @param commentByArticlePageDto
+     * @return
+     */
+    Page<CommentVo> pageCommentByArticleId(CommentByArticlePageDto commentByArticlePageDto);
 }

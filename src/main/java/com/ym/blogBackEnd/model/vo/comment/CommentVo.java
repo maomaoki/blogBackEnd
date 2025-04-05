@@ -1,9 +1,8 @@
 package com.ym.blogBackEnd.model.vo.comment;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.ym.blogBackEnd.model.vo.user.UserCommentVo;
+
 import lombok.Data;
 
 import java.io.Serial;
@@ -35,10 +34,16 @@ public class CommentVo implements Serializable {
      */
     private String content;
 
+//    /**
+//     * 评论人ID
+//     */
+//    private Long userId;
+
     /**
-     * 评论人ID
+     * 塞入 评论人 的 用户 信息
      */
-    private Long userId;
+    private UserCommentVo userCommentVo;
+
 
     /**
      * 是否热门评论 0未热门 1热门

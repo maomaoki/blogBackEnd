@@ -1,7 +1,10 @@
 package com.ym.blogBackEnd.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ym.blogBackEnd.common.response.Result;
+import com.ym.blogBackEnd.model.dto.comment.CommentByArticlePageDto;
 import com.ym.blogBackEnd.model.dto.comment.CommentSaveDto;
+import com.ym.blogBackEnd.model.vo.comment.CommentVo;
 import com.ym.blogBackEnd.service.CommentService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,5 +35,12 @@ public class CommentController {
     public Result<Boolean> saveComment(@RequestBody CommentSaveDto commentSaveDto, HttpServletRequest request) {
         Boolean result = commentService.saveComment(commentSaveDto, request);
         return ResUtils.success(result);
+    }
+
+
+    @PostMapping("/page")
+    public Result<Page<CommentVo>> commentPageByArticleId(@RequestBody CommentByArticlePageDto commentByArticlePageDto) {
+        Page<CommentVo> commentVoPage = commentService.pageCommentByArticleId(commentByArticlePageDto);
+        return ResUtils.success(commentVoPage, "查询成功");
     }
 }

@@ -25,6 +25,7 @@ import com.ym.blogBackEnd.model.dto.user.admin.AdminAddUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
+import com.ym.blogBackEnd.model.vo.user.UserCommentVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.PictureService;
 import com.ym.blogBackEnd.service.UserService;
@@ -292,6 +293,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorEnums.NOT_AUTH, "账号已被冻结,请联系管理员!");
         }
         return userToVo(user);
+    }
+
+
+    /**
+     * 这个接口 是 给 评论用的 查询 评论人 信息
+     *
+     * @param userId 用户id
+     * @return 用户脱敏信息
+     */
+    @Override
+    public UserCommentVo userByCommentUserId(Long userId) {
+        if (userId == null) {
+            log.error("用户id不能为空");
+            return null;
+        }
+        User user = this.getById(userId);
+        Integer userStatus = user.getUserStatus();
+        String userRole = user.getUserRole();
+        // 排除 黑名单
+        if (userRole.equals(UserConstant.USER_ROLE_BLACK_USER)) {
+            log.error("黑名单用户");
+            return null;
+        }
+        if (userStatus.equals(UserConstant.USER_STATUS_FREEZE)) {
+            log.error("账号已被冻结,请联系管理员!");
+            return null;
+        }
+
+        return BeanUtil.copyProperties(user, UserCommentVo.class);
     }
 
     /**
@@ -751,7 +781,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         String userRole = user.getUserRole();
         UserRoleEnums roleEnums = UserRoleEnums.getRole(userRole);
-        if(roleEnums == null){
+        if (roleEnums == null) {
             return false;
         }
         return UserRoleEnums.ADMIN.equals(roleEnums) || UserRoleEnums.BOSS.equals(roleEnums);

@@ -11,6 +11,7 @@ import com.ym.blogBackEnd.model.dto.user.admin.AdminAddUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminDeleteUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminPageUserDto;
 import com.ym.blogBackEnd.model.dto.user.admin.AdminUpdateUserDto;
+import com.ym.blogBackEnd.model.vo.user.UserCommentVo;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +59,17 @@ public interface UserService extends IService<User> {
      * @return 用户脱敏信息
      */
     public UserVo userGetLoginInfo(HttpServletRequest request);
+
+
+
+    /**
+     * 这个接口 是 给 评论用的 查询 评论人 信息
+     *
+     * @param userId 用户id
+     * @return 用户脱敏信息
+     */
+    public UserCommentVo userByCommentUserId(Long userId);
+
 
     /**
      * 用户 注销
