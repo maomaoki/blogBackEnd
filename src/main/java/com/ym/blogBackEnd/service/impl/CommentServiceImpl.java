@@ -137,6 +137,30 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment>
         return commentVoPage;
     }
 
+
+    /**
+     * 获取 最新 评论
+     *
+     * @return
+     */
+    @Override
+    public List<CommentVo> latestComment(Integer size) {
+        if (ObjUtil.isEmpty(size)) {
+            size = 6;
+        }
+
+        // 获取 最新 size 条 记录 评论
+        // 根据 文章 id 查询 所有 评论列表(状态为审核通过) 并且默认以时间最新排序
+        QueryWrapper<Comment> commentQueryWrapper = new QueryWrapper<>();
+        commentQueryWrapper.eq("reviewStatus", CommentConstant.COMMENT_STATUS_PASS);
+        commentQueryWrapper.eq("isShow", CommentConstant.COMMENT_IS_SHOW);
+        commentQueryWrapper.orderBy(true, false, "createTime");
+        commentQueryWrapper.last(StrUtil.format("limit 0 , {}", size));
+        List<Comment> list = this.list(commentQueryWrapper);
+
+        return commentListToVoList(list);
+    }
+
     /**
      * 过滤 评论中 的 敏感词 替换成 **
      *

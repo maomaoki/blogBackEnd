@@ -8,13 +8,11 @@ import com.ym.blogBackEnd.model.vo.comment.CommentVo;
 import com.ym.blogBackEnd.service.CommentService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @Title: CommentController
@@ -42,5 +40,12 @@ public class CommentController {
     public Result<Page<CommentVo>> commentPageByArticleId(@RequestBody CommentByArticlePageDto commentByArticlePageDto) {
         Page<CommentVo> commentVoPage = commentService.pageCommentByArticleId(commentByArticlePageDto);
         return ResUtils.success(commentVoPage, "查询成功");
+    }
+
+
+    @GetMapping("/latest/{size}")
+    public Result<List<CommentVo>> commentListByLatest(@PathVariable Integer size) {
+        List<CommentVo> commentVos = commentService.latestComment(size);
+        return ResUtils.success(commentVos, "查询成功");
     }
 }

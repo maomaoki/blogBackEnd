@@ -8,6 +8,7 @@ import com.ym.blogBackEnd.model.dto.comment.CommentSaveDto;
 import com.ym.blogBackEnd.model.vo.comment.CommentVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author 54621
@@ -33,4 +34,12 @@ public interface CommentService extends IService<Comment> {
      * @return
      */
     Page<CommentVo> pageCommentByArticleId(CommentByArticlePageDto commentByArticlePageDto);
+
+
+    /**
+     * 获取 最新 评论
+     *
+     * @return
+     */
+    List<CommentVo> latestComment(Integer size);
 }
