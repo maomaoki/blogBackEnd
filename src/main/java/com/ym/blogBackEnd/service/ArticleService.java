@@ -7,6 +7,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
+import com.ym.blogBackEnd.model.dto.articleCollect.CollectArticlePageDto;
 import com.ym.blogBackEnd.model.vo.article.*;
 import io.swagger.models.auth.In;
 
@@ -163,7 +164,17 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 统计 文章 分类 信息(只有发布的)
+     *
      * @return
      */
     List<ArticleTagsCountVo> getArticleCategoryList();
+
+
+    /**
+     * 这个 接口 给 收藏文章 查询 使用
+     *
+     * @param ids ids 列表
+     * @return
+     */
+    List<ArticlePageVo> articleByIdsAndWrapper(List<Long> ids, CollectArticlePageDto collectArticlePageDto);
 }

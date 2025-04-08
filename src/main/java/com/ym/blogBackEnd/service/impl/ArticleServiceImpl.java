@@ -15,6 +15,7 @@ import com.ym.blogBackEnd.model.dto.article.admin.AdminAddArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminDeleteArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminEditArticleDto;
 import com.ym.blogBackEnd.model.dto.article.admin.AdminPageArticleDto;
+import com.ym.blogBackEnd.model.dto.articleCollect.CollectArticlePageDto;
 import com.ym.blogBackEnd.model.vo.article.*;
 import com.ym.blogBackEnd.model.vo.user.UserVo;
 import com.ym.blogBackEnd.service.ArticleService;
@@ -304,7 +305,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 !article.getArticleStatus().equals(ArticleConstant.ARTICLE_STATUS_PUBLISH),
                 ErrorEnums.NOT_AUTH,
                 "文章未发布");
-
 
 
         return article;
@@ -619,6 +619,29 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
         });
 
         return articleCategorysCountVoList;
+    }
+
+
+    /**
+     * 这个 接口 给 收藏文章 查询 使用
+     *
+     * @param ids ids 列表
+     * @return
+     */
+    @Override
+    public List<ArticlePageVo> articleByIdsAndWrapper(List<Long> ids, CollectArticlePageDto collectArticlePageDto) {
+
+        AdminPageArticleDto adminPageArticleDto = BeanUtil.copyProperties(collectArticlePageDto, AdminPageArticleDto.class);
+        QueryWrapper<Article> articleQueryWrapper = queryWrapper(adminPageArticleDto);
+        articleQueryWrapper.eq("articleStatus",ArticleConstant.ARTICLE_STATUS_PUBLISH);
+        articleQueryWrapper.in("id", ids);
+
+
+        // 根据 ids 和 wrapper 查询
+        List<Article> articles = this.baseMapper.selectList(articleQueryWrapper);
+
+
+        return articleListToPageVos(articles);
     }
 }
 

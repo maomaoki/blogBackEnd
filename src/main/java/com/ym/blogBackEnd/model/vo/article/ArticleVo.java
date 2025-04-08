@@ -20,7 +20,6 @@ public class ArticleVo implements Serializable {
     /**
      * 文章id
      */
-    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
