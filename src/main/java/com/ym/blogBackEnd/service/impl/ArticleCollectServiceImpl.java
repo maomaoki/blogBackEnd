@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ym.blogBackEnd.enums.ErrorEnums;
 import com.ym.blogBackEnd.model.domain.Article;
@@ -87,25 +88,25 @@ public class ArticleCollectServiceImpl extends ServiceImpl<ArticleCollectMapper,
      * @return
      */
     @Override
-    public List<CollectArticleVo> collectArticlePage(CollectArticlePageDto collectArticlePageDto, HttpServletRequest request) {
+    public Page<CollectArticleVo> collectArticlePage(CollectArticlePageDto collectArticlePageDto, HttpServletRequest request) {
+        Integer pageNum = collectArticlePageDto.getPageNum();
+        Integer pageSize = collectArticlePageDto.getPageSize();
 
         // 1. 必须登录
         UserVo userVo = userService.userGetLoginInfo(request);
 
-        // 2. 根据 用户id 去查询 绑定文章
+        // 2. 根据 用户id 去查询 绑定文章（分页查询）
         Long userId = userVo.getId();
         QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
         articleCollectQueryWrapper.eq("userId", userId);
-        List<ArticleCollect> articleCollectList = this.list(articleCollectQueryWrapper);
-
-        // 空数据 直接 返回
-        if (CollUtil.isEmpty(articleCollectList)) {
-            return new ArrayList<>();
+        Page<ArticleCollect> page = this.page(new Page<>(pageNum, pageSize), articleCollectQueryWrapper);
+        List<ArticleCollect> articleCollectList = page.getRecords();
+        if (ObjUtil.isEmpty(articleCollectList)) {
+            return new Page<CollectArticleVo>(pageNum, pageSize, articleCollectList.size());
         }
 
 
         List<CollectArticleVo> collectArticleVos = BeanUtil.copyToList(articleCollectList, CollectArticleVo.class);
-
         // 进行脱敏 加 更改 文章数据
         List<Long> ids = articleCollectList.stream().map(ArticleCollect::getArticleId).toList();
         List<ArticlePageVo> articlePageVos = articleService.articleByIdsAndWrapper(ids, collectArticlePageDto);
@@ -117,7 +118,12 @@ public class ArticleCollectServiceImpl extends ServiceImpl<ArticleCollectMapper,
             e.setArticlePageVo(longArticlePageVoHashMap.get(e.getArticleId()));
         });
 
-        return collectArticleVos;
+        collectArticleVos = collectArticleVos.stream().filter(e -> ObjUtil.isNotEmpty(e.getArticlePageVo())).toList();
+
+        Page<CollectArticleVo> collectArticleVoPage = new Page<>(pageNum, pageSize, collectArticleVos.size());
+        collectArticleVoPage.setRecords(collectArticleVos);
+
+        return collectArticleVoPage;
     }
 
 
@@ -129,7 +135,7 @@ public class ArticleCollectServiceImpl extends ServiceImpl<ArticleCollectMapper,
      */
     @Override
     public void collectArticleDelete(CollectArticleDeleteDto collectArticleDeleteDto, HttpServletRequest request) {
-        Long collectArticleDeleteDtoId = collectArticleDeleteDto.getId();
+        Long collectArticleDeleteDtoId = collectArticleDeleteDto.getArticleId();
         ThrowUtils.ifThrow(
                 ObjUtil.isEmpty(collectArticleDeleteDtoId),
                 ErrorEnums.PARAMS_ERROR,
@@ -138,9 +144,38 @@ public class ArticleCollectServiceImpl extends ServiceImpl<ArticleCollectMapper,
 
         // 必须 登录
         UserVo userVo = userService.userGetLoginInfo(request);
+        QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
+        articleCollectQueryWrapper.eq("articleId", collectArticleDeleteDtoId);
+        articleCollectQueryWrapper.eq("userId", userVo.getId());
 
         // 才能删除
-        this.baseMapper.deleteById(collectArticleDeleteDtoId);
+        this.baseMapper.delete(articleCollectQueryWrapper);
+    }
+
+
+    /**
+     * 根据 文章id 和 用户 id 查询 是否 收藏了 此 文章
+     *
+     * @param articleId
+     * @param request
+     * @return
+     */
+    @Override
+    public Boolean getIsCollectArticleByArticleIdAndUserId(Long articleId, HttpServletRequest request) {
+        // 1. 参数 问题
+        ThrowUtils
+                .ifThrow(ObjUtil.isEmpty(articleId), ErrorEnums.PARAMS_ERROR, "文章id不能为空");
+
+        // 2. 登录
+        UserVo userVo = userService.userGetLoginInfo(request);
+
+        // 3. 根据 用户id 和 文章 id 查询 是否 存在 此 记录
+        QueryWrapper<ArticleCollect> articleCollectQueryWrapper = new QueryWrapper<>();
+        articleCollectQueryWrapper.eq("articleId", articleId);
+        articleCollectQueryWrapper.eq("userId", userVo.getId());
+        ArticleCollect articleCollect = this.getOne(articleCollectQueryWrapper);
+        // 4. 返回结果
+        return ObjUtil.isNotEmpty(articleCollect);
     }
 }
 

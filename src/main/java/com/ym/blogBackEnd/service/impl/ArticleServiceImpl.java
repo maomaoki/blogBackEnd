@@ -430,9 +430,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
                 .or()
                 .like(StrUtil.isNotBlank(articleCondition), "articleContent", StrUtil.trimStart(articleCondition))
                 .or()
-                .like(StrUtil.isNotBlank(articleCondition), "articleTitle", StrUtil.trimStart(articleCondition));
+                .like(StrUtil.isNotBlank(articleCondition), "articleTitle", StrUtil.trimStart(articleCondition))
+        ;
 
-        userQueryWrapper.eq(StrUtil.isNotBlank(articleCategory), "articleCategory", articleCategory);
+        userQueryWrapper.like(StrUtil.isNotBlank(articleCategory), "articleCategory", articleCategory);
         userQueryWrapper.eq(StrUtil.isNotBlank(articleAuthor), "articleAuthor", articleAuthor);
         userQueryWrapper.eq(ObjUtil.isNotNull(isRecommend), "isRecommend", isRecommend);
         userQueryWrapper.eq(ObjUtil.isNotNull(isHot), "isHot", isHot);
@@ -631,16 +632,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     @Override
     public List<ArticlePageVo> articleByIdsAndWrapper(List<Long> ids, CollectArticlePageDto collectArticlePageDto) {
 
+
         AdminPageArticleDto adminPageArticleDto = BeanUtil.copyProperties(collectArticlePageDto, AdminPageArticleDto.class);
         QueryWrapper<Article> articleQueryWrapper = queryWrapper(adminPageArticleDto);
-        articleQueryWrapper.eq("articleStatus",ArticleConstant.ARTICLE_STATUS_PUBLISH);
-        articleQueryWrapper.in("id", ids);
-
+        articleQueryWrapper.and(e->{
+            e.eq("articleStatus", ArticleConstant.ARTICLE_STATUS_PUBLISH);
+            e.in("id", ids);
+        });
 
         // 根据 ids 和 wrapper 查询
         List<Article> articles = this.baseMapper.selectList(articleQueryWrapper);
-
-
         return articleListToPageVos(articles);
     }
 }

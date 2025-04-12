@@ -7,5 +7,5 @@ import lombok.Data;
  */
 @Data
 public class CollectArticleDeleteDto {
-    private Long id;
+    private Long articleId;
 }

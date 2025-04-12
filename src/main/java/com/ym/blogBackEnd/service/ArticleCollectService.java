@@ -1,5 +1,6 @@
 package com.ym.blogBackEnd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ym.blogBackEnd.model.domain.ArticleCollect;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ym.blogBackEnd.model.dto.articleCollect.CollectArticleDeleteDto;
@@ -29,16 +30,27 @@ public interface ArticleCollectService extends IService<ArticleCollect> {
 
     /**
      * 分页 查询 收藏 文章
+     *
      * @param collectArticlePageDto
      * @param request
      * @return
      */
-    List<CollectArticleVo> collectArticlePage(CollectArticlePageDto collectArticlePageDto, HttpServletRequest request);
+    Page<CollectArticleVo> collectArticlePage(CollectArticlePageDto collectArticlePageDto, HttpServletRequest request);
 
     /**
      * 删除 记录
+     *
      * @param collectArticleDeleteDto
      * @param request
      */
     void collectArticleDelete(CollectArticleDeleteDto collectArticleDeleteDto, HttpServletRequest request);
+
+    /**
+     * 根据 文章id 和 用户 id 查询 是否 收藏了 此 文章
+     *
+     * @param articleId
+     * @param request
+     * @return
+     */
+    Boolean getIsCollectArticleByArticleIdAndUserId(Long articleId, HttpServletRequest request);
 }

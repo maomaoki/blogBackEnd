@@ -1,6 +1,7 @@
 package com.ym.blogBackEnd.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ym.blogBackEnd.annotate.CheckAuth;
 import com.ym.blogBackEnd.common.response.Result;
 import com.ym.blogBackEnd.constant.UserConstant;
@@ -12,10 +13,7 @@ import com.ym.blogBackEnd.model.vo.articleCollect.CollectArticleVo;
 import com.ym.blogBackEnd.service.ArticleCollectService;
 import com.ym.blogBackEnd.utils.ResUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -38,9 +36,9 @@ public class ArticleCollectController {
 
 
     @PostMapping("/page")
-    public Result<List<CollectArticleVo>> collectArticlePage(@RequestBody CollectArticlePageDto collectArticlePageDto, HttpServletRequest request) {
+    public Result<Page<CollectArticleVo>> collectArticlePage(@RequestBody CollectArticlePageDto collectArticlePageDto, HttpServletRequest request) {
 
-        List<CollectArticleVo> collectArticleVos = articleCollectService.collectArticlePage(collectArticlePageDto, request);
+        Page<CollectArticleVo> collectArticleVos = articleCollectService.collectArticlePage(collectArticlePageDto, request);
 
         return ResUtils.success(collectArticleVos, "查询成功!");
     }
@@ -52,4 +50,10 @@ public class ArticleCollectController {
         return ResUtils.success(true, "删除成功!");
     }
 
+
+    @GetMapping("/get/{articleId}")
+    public Result<Boolean> getIsCollectArticleByArticleIdAndUserId(@PathVariable Long articleId, HttpServletRequest request) {
+        Boolean isCollect = articleCollectService.getIsCollectArticleByArticleIdAndUserId(articleId, request);
+        return ResUtils.success(isCollect, "查询成功");
+    }
 }

@@ -30,7 +30,6 @@ public class CollectArticleVo {
      */
     private ArticlePageVo articlePageVo;
 
-
     /**
      * 创建时间
      */
